@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<title>Urne mit Baumdiagramm</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --hell:#EAF1FA; --fg:#18212E; --muted:#596476; --line:#D6DFEA; --grid:#E6ECF3;
+  --accent:#1F5FA8; --accent-fg:#FFFFFF;
+  --s1:#1F5FA8; --s2:#C0392B; --s3:#2E8B57; --s4:#E07B18; --s5:#7B4BB7;
+  --s1-pale:#C6D6EC; --s2-pale:#F0C6C0;
+  --ref:#18212E; --band:rgba(242,194,48,.30); --dim:#E3E8EF;
+  --gelb:#F2C230; --gelb-bg:#FDF4D6;
+  --f-display:"Lexend","Segoe UI",system-ui,sans-serif;
+  --f-body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F141B; --surface:#171F2A; --hell:#1C2836; --fg:#E5EBF2; --muted:#9BA7B8; --line:#2B3747; --grid:#222C39;
+  --accent:#6EA6EA; --accent-fg:#0F141B;
+  --s1:#6EA6EA; --s2:#E8624F; --s3:#4FB582; --s4:#F0A04B; --s5:#B08AE6;
+  --s1-pale:#253A55; --s2-pale:#5C2C27;
+  --ref:#E5EBF2; --band:rgba(233,192,74,.22); --dim:#1F2833;
+  --gelb:#E9C04A; --gelb-bg:#2E2814; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F141B; --surface:#171F2A; --hell:#1C2836; --fg:#E5EBF2; --muted:#9BA7B8; --line:#2B3747; --grid:#222C39;
+  --accent:#6EA6EA; --accent-fg:#0F141B;
+  --s1:#6EA6EA; --s2:#E8624F; --s3:#4FB582; --s4:#F0A04B; --s5:#B08AE6;
+  --s1-pale:#253A55; --s2-pale:#5C2C27;
+  --ref:#E5EBF2; --band:rgba(233,192,74,.22); --dim:#1F2833;
+  --gelb:#E9C04A; --gelb-bg:#2E2814; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px;
+  font-variant-numeric:tabular-nums}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.2}
+h1{font-size:clamp(1.6rem,3.4vw,2.3rem);font-weight:700}
+h2{font-size:1.15rem;font-weight:600}
+p{margin:0}
+.ol{text-decoration:overline;text-decoration-thickness:1.5px}
+header{display:flex;flex-direction:column;gap:8px;border-bottom:3px solid var(--accent);padding-bottom:16px}
+.eyebrow{font-family:var(--f-display);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.eyebrow a{color:inherit}
+.lead{color:var(--muted);max-width:68ch}
+.main{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:820px){.main{grid-template-columns:minmax(0,1fr)}}
+.panel,.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.card{gap:10px;padding:16px}
+.stack{display:flex;flex-direction:column;gap:14px;min-width:0}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
+@media (max-width:820px){.row2{grid-template-columns:minmax(0,1fr)}}
+.headrow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.sub,.hint{color:var(--muted);font-size:.9rem}
+.ctrl{display:flex;flex-direction:column;gap:6px}
+.ctrl-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.ctrl-top label{font-weight:600}
+.smalllabel,.ctrl>label:not(.check){font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.num{display:flex;align-items:center;gap:4px;font-weight:700}
+.num input{width:4.8em;font:inherit;font-weight:700;text-align:right;padding:2px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg)}
+input[type=range]{width:100%;accent-color:var(--accent);margin:0}
+select{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);width:100%}
+button{font:inherit;cursor:pointer}
+.btn{background:var(--accent);color:var(--accent-fg);border:0;border-radius:8px;padding:9px 14px;font-weight:700}
+.btn:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.45;cursor:default;filter:none}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.btnrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.btnrow .btn{padding:8px 4px}
+.chip{border:1px solid var(--line);background:var(--hell);color:var(--fg);border-radius:999px;padding:4px 12px;font-size:.9rem}
+.chip:hover{border-color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+:focus-visible{outline:3px solid var(--gelb);outline-offset:2px}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{flex:1;border:0;background:var(--surface);color:var(--fg);padding:7px 6px;font-size:.9rem;line-height:1.25}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed=true]{background:var(--accent);color:var(--accent-fg);font-weight:700}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:.95rem}
+.check input{accent-color:var(--accent);margin-top:4px}
+.bignum{font-family:var(--f-display);font-size:2.4rem;font-weight:700;line-height:1;color:var(--accent)}
+canvas.chart{display:block;width:100%;height:280px}
+@media (max-width:640px){canvas.chart{height:230px}}
+.key{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.88rem;color:var(--muted)}
+.key span{display:flex;align-items:center;gap:6px}
+.key i{display:inline-block;width:18px;height:10px;border-radius:2px}
+.tscroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid var(--line);padding:6px 10px;text-align:right}
+th{background:var(--hell);text-align:center}
+.result{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:10px;padding:16px 18px;display:flex;flex-wrap:wrap;gap:8px 24px;align-items:center}
+.result .txt{flex:1;min-width:220px}
+.entdecken{background:var(--gelb-bg);border:1px solid var(--gelb);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.entdecken ol{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:10px;max-width:80ch}
+summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:.92rem}
+details p{margin-top:4px;font-size:.95rem}
+footer{color:var(--muted);font-size:.88rem}
+footer a{color:var(--accent)}
+[hidden]{display:none!important}
+
+/* Layout: links Urne und Ziehknöpfe, rechts der Baum, der live mitzählt. */
+.urn{display:flex;flex-wrap:wrap;gap:4px;padding:12px;border:2px solid var(--fg);border-top:0;border-radius:0 0 28px 28px;min-height:70px;align-content:flex-end;background:var(--hell)}
+.ball{width:18px;height:18px;border-radius:50%;flex:none}
+.ball.r{background:var(--s2)} .ball.b{background:var(--s1)}
+.ball.out{opacity:.18}
+.drawn{display:flex;gap:8px;align-items:center;min-height:34px}
+.drawn .ball{width:28px;height:28px}
+svg{width:100%;height:auto;display:block}
+svg text{fill:var(--fg);font-family:var(--f-body);font-size:15px}
+svg .edge{stroke:var(--muted);stroke-width:1.4}
+svg .edge.hi{stroke:var(--s4);stroke-width:3}
+svg .nd-r{fill:var(--s2)} svg .nd-b{fill:var(--s1)}
+svg text.sm{font-size:13px;fill:var(--muted)}
+svg text.hi{fill:var(--s4);font-weight:700}
+svg .rowbg{fill:var(--s4);opacity:.12}
+.treescroll{overflow-x:auto}
+.treescroll svg{min-width:560px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Stochastik · Simulation 3 · zu Modul 3, Aufgabe 3.1 · Paket 2, Aufgabe 2.8</span>
+    <h1>Urne mit Baumdiagramm</h1>
+    <p class="lead">Ziehe Kugeln mit oder ohne Zurücklegen. Der Baum zeigt an jedem Ast die Wahrscheinlichkeit und zählt mit, wie oft jeder Pfad in der Simulation vorkommt.</p>
+  </header>
+
+  <div class="main">
+    <section class="panel" aria-label="Einstellungen">
+      <div class="ctrl">
+        <div class="ctrl-top"><label for="rR">Rote Kugeln</label><span class="num"><input id="rN" type="number" min="1" max="40" aria-label="Anzahl rote Kugeln"></span></div>
+        <input id="rR" type="range" min="1" max="40">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-top"><label for="bR">Blaue Kugeln</label><span class="num"><input id="bN" type="number" min="1" max="40" aria-label="Anzahl blaue Kugeln"></span></div>
+        <input id="bR" type="range" min="1" max="40">
+      </div>
+      <div class="ctrl">
+        <span class="smalllabel">Ziehen</span>
+        <div class="seg" role="group" aria-label="Zurücklegen"><button data-m="mit" aria-pressed="false">mit Zurücklegen</button><button data-m="ohne" aria-pressed="true">ohne Zurücklegen</button></div>
+        <div class="seg" role="group" aria-label="Anzahl Züge"><button data-d="2" aria-pressed="true">2 Kugeln</button><button data-d="3" aria-pressed="false">3 Kugeln</button></div>
+      </div>
+      <div class="chips"><button class="chip" data-pr="3,2">Aufgabe 3.1 (3 rot, 2 blau)</button><button class="chip" data-pr="30,20">Große Urne (30 rot, 20 blau)</button></div>
+      <div class="ctrl">
+        <span class="smalllabel">Urne und letzte Ziehung</span>
+        <div class="urn" id="urn"></div>
+        <div class="drawn" id="drawn"></div>
+      </div>
+      <button class="btn" id="one">Einmal ziehen</button>
+      <div class="btnrow"><button class="btn" data-add="10">+10</button><button class="btn" data-add="100">+100</button><button class="btn" data-add="1000">+1000</button></div>
+      <button class="btn ghost" id="reset">Zählung zurücksetzen</button>
+    </section>
+
+    <section class="stack">
+      <div class="card">
+        <div class="headrow"><h2>Baumdiagramm</h2><span class="sub" id="nInfo"></span></div>
+        <div class="treescroll"><svg id="tree" role="img" aria-label="Baumdiagramm der Ziehung"></svg></div>
+        <p class="sub">Am Pfadende: Pfadwahrscheinlichkeit (Produkt entlang des Pfades), daneben in grau die relative Häufigkeit in der Simulation.</p>
+      </div>
+      <div class="card">
+        <div class="ctrl"><label for="ev">Ereignis</label><select id="ev"></select></div>
+        <div class="result" style="border:0;padding:0">
+          <span class="bignum" id="evP">–</span>
+          <div class="txt"><p id="evTxt"></p><p class="sub" id="evCmp"></p></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="entdecken">
+    <h2>Entdecken</h2>
+    <ol>
+      <li>Lade Aufgabe 3.1 und lies am Baum ab: P(beide rot) mit und ohne Zurücklegen. Vergleiche mit deiner Rechnung.
+        <details><summary>Lösungshinweis</summary><p>Mit Zurücklegen: 3/5 · 3/5 = 9/25 = 0,36. Ohne Zurücklegen: 3/5 · 2/4 = 6/20 = 0,3.</p></details></li>
+      <li>Wähle „mindestens eine blaue Kugel“. Welche Pfade gehören dazu? Wie geht es schneller über das Gegenereignis?
+        <details><summary>Lösungshinweis</summary><p>Alle Pfade außer rot-rot. Also P = 1 − P(beide rot), ohne Zurücklegen 1 − 0,3 = 0,7.</p></details></li>
+      <li>Warum ändern sich beim Ziehen ohne Zurücklegen die Zahlen auf der zweiten Stufe, mit Zurücklegen aber nicht?
+        <details><summary>Lösungshinweis</summary><p>Ohne Zurücklegen fehlt die erste Kugel in der Urne. Nach „rot“ sind nur noch 2 rote von 4 Kugeln übrig.</p></details></li>
+      <li>Lade die große Urne und schalte zwischen mit und ohne Zurücklegen hin und her. Was fällt auf? Was folgt daraus für die Binomialverteilung (Paket 2, Aufgabe 2.8)?
+        <details><summary>Lösungshinweis</summary><p>Bei großen Urnen ändern sich die Wahrscheinlichkeiten durch das Herausnehmen kaum. Dann darf man Ziehen ohne Zurücklegen näherungsweise wie mit Zurücklegen, also binomial, rechnen.</p></details></li>
+    </ol>
+  </section>
+
+  <footer>Gehört zu: Stochastik-Wiederholung BG 13, Modul 3 „Mehrstufige Zufallsexperimente und Pfadregeln“, und Binomial- und Normalverteilung, Modul 2. Die Seite speichert keine Daten. <a href="./" style="color:var(--accent)">Alle Simulationen</a></footer>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const fN=n=>Math.round(n).toLocaleString("de-DE").replace(/\./g," ");
+const fD=(x,d)=>x.toFixed(d).replace(".",",");
+let C={};
+function readColors(){const cs=getComputedStyle(document.documentElement);
+  ["s1","s2","s3","s4","s5","s1-pale","s2-pale","ref","band","grid","muted","fg","surface","line","dim","accent","hell","gelb"].forEach(k=>C[k]=cs.getPropertyValue("--"+k).trim());}
+function onTheme(fn){readColors();const r=()=>{readColors();fn();};
+  const mq=matchMedia("(prefers-color-scheme: dark)");mq.addEventListener?mq.addEventListener("change",r):mq.addListener(r);
+  new MutationObserver(r).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+  let t;window.addEventListener("resize",()=>{clearTimeout(t);t=setTimeout(fn,80);});}
+function setupCanvas(cv){const dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;
+  if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);}
+  const ctx=cv.getContext("2d");ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
+  ctx.font="13px "+getComputedStyle(document.body).fontFamily;return {ctx,w,h};}
+function segBind(attr,fn){const bs=document.querySelectorAll("[data-"+attr+"]");
+  bs.forEach(b=>b.addEventListener("click",()=>{bs.forEach(x=>x.setAttribute("aria-pressed",String(x===b)));fn(b.dataset[attr]);}));}
+const REDUCE=matchMedia("(prefers-reduced-motion: reduce)").matches;
+/* Binomial und Normal */
+function lnFact(n){let s=0;for(let i=2;i<=n;i++)s+=Math.log(i);return s;}
+function binomPMF(n,p){const a=new Float64Array(n+1);
+  if(p<=0){a[0]=1;return a;} if(p>=1){a[n]=1;return a;}
+  const lf=[0];for(let i=1;i<=n;i++)lf[i]=lf[i-1]+Math.log(i);
+  for(let k=0;k<=n;k++)a[k]=Math.exp(lf[n]-lf[k]-lf[n-k]+k*Math.log(p)+(n-k)*Math.log(1-p));return a;}
+function erf(x){const t=1/(1+0.3275911*Math.abs(x));const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return x>=0?y:-y;}
+function Phi(z){return 0.5*(1+erf(z/Math.SQRT2));}
+function invPhi(q){let lo=-10,hi=10;for(let i=0;i<80;i++){const m=(lo+hi)/2;if(Phi(m)<q)lo=m;else hi=m;}return (lo+hi)/2;}
+function randBinom(n,p){let k=0;for(let i=0;i<n;i++)if(Math.random()<p)k++;return k;}
+
+(function(){
+const st={r:3,b:2,mode:"ohne",d:2,ev:0};
+let counts={},n=0,lastDraw=null;
+const NS="http://www.w3.org/2000/svg";
+function paths(d){const out=[];(function rec(p){if(p.length===d){out.push(p);return;}rec(p+"r");rec(p+"b");})("");return out;}
+function stepProb(prefix,c,mode){ // Wahrscheinlichkeit für Farbe c nach bereits gezogenen prefix
+  let r=st.r,b=st.b;if(mode==="ohne")for(const x of prefix){if(x==="r")r--;else b--;}
+  const tot=r+b,num=c==="r"?r:b;return {num:Math.max(num,0),den:tot};}
+function pathProb(p,mode){let v=1,num=[],den=[];for(let i=0;i<p.length;i++){const s=stepProb(p.slice(0,i),p[i],mode);v*=s.den?s.num/s.den:0;num.push(s.num);den.push(s.den);}
+  return {v,num:num.reduce((a,b)=>a*b,1),den:den.reduce((a,b)=>a*b,1)};}
+function events(){const d=st.d;
+  if(d===2)return [["beide Kugeln rot",p=>p==="rr"],["zwei verschiedene Farben",p=>p[0]!==p[1]],["mindestens eine blaue Kugel",p=>p.includes("b")],["beide Kugeln blau",p=>p==="bb"]];
+  return [["alle drei rot",p=>p==="rrr"],["genau zwei rote",p=>(p.match(/r/g)||[]).length===2],["genau eine rote",p=>(p.match(/r/g)||[]).length===1],["mindestens eine blaue Kugel",p=>p.includes("b")]];}
+function fillEv(){const s=$("ev");s.innerHTML="";events().forEach((e,i)=>{const o=document.createElement("option");o.value=i;o.textContent=e[0];s.appendChild(o);});st.ev=0;s.value=0;}
+function reset(){counts={};paths(st.d).forEach(p=>counts[p]=0);n=0;lastDraw=null;}
+function drawOnce(){let r=st.r,b=st.b,p="";
+  for(let i=0;i<st.d;i++){const tot=r+b;const c=Math.random()*tot<r?"r":"b";p+=c;if(st.mode==="ohne"){if(c==="r")r--;else b--;}}
+  counts[p]++;n++;lastDraw=p;}
+
+function tree(){
+  const svg=$("tree");svg.innerHTML="";const d=st.d,P=paths(d),ev=events()[st.ev][1];
+  const rowH=d===2?50:34,Hh=P.length*rowH+20,colW=d===2?150:120,leafX=30+d*colW;
+  svg.setAttribute("viewBox","0 0 "+(leafX+330)+" "+Hh);
+  const yOf=(prefix)=>{const L=prefix.length;if(L===0)return Hh/2;let idx=0;for(const c of prefix)idx=idx*2+(c==="b"?1:0);
+    const span=Math.pow(2,d-L);return 10+(idx*span+span/2)*rowH;};
+  const el=(t,a,txt)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;svg.appendChild(e);return e;};
+  P.forEach(p=>{if(ev(p))el("rect",{x:leafX-14,y:yOf(p)-rowH/2+3,width:330,height:rowH-6,rx:6,class:"rowbg"});});
+  (function rec(prefix){if(prefix.length===d)return;
+    ["r","b"].forEach(c=>{const q=prefix+c,x1=30+prefix.length*colW,x2=30+q.length*colW,y1=yOf(prefix),y2=yOf(q);
+      const hi=P.some(p=>p.startsWith(q)&&ev(p));
+      el("line",{x1:x1+8,y1,x2:x2-10,y2,class:"edge"+(hi?" hi":"")});
+      const s=stepProb(prefix,c,st.mode);
+      el("text",{x:(x1+x2)/2,y:(y1+y2)/2+(y2<y1?-7:16),"text-anchor":"middle",class:hi?"hi":""},s.num+"/"+s.den);
+      el("circle",{cx:x2,cy:y2,r:8,class:c==="r"?"nd-r":"nd-b"});
+      rec(q);});})("");
+  el("circle",{cx:30,cy:yOf(""),r:5,fill:"none",stroke:C.muted});
+  P.forEach(p=>{const pp=pathProb(p,st.mode),y=yOf(p)+5;
+    el("text",{x:leafX+16,y,"font-weight":"700"},p);
+    el("text",{x:leafX+16+d*12+12,y},pp.num+"/"+pp.den+" ≈ "+fD(pp.v,3));
+    el("text",{x:leafX+210,y,class:"sm"},n?"Sim "+fD(counts[p]/n,3)+" ("+fN(counts[p])+")":"Sim –");});
+}
+function urnView(){
+  let h="";const used={r:0,b:0};if(lastDraw&&st.mode==="ohne")for(const c of lastDraw)used[c]++;
+  for(let i=0;i<st.r;i++)h+='<span class="ball r'+(i<used.r?" out":"")+'"></span>';
+  for(let i=0;i<st.b;i++)h+='<span class="ball b'+(i<used.b?" out":"")+'"></span>';
+  $("urn").innerHTML=h;
+  $("drawn").innerHTML=lastDraw?'<span class="hint">Gezogen:</span>'+lastDraw.split("").map(c=>'<span class="ball '+c+'"></span>').join(""):'<span class="hint">Noch nicht gezogen</span>';
+}
+function render(){
+  urnView();tree();
+  const E=events()[st.ev],P=paths(st.d);
+  const th=P.filter(E[1]).reduce((s,p)=>s+pathProb(p,st.mode).v,0),other=P.filter(E[1]).reduce((s,p)=>s+pathProb(p,st.mode==="mit"?"ohne":"mit").v,0);
+  const sim=P.filter(E[1]).reduce((s,p)=>s+counts[p],0);
+  $("evP").textContent=fD(th,3);
+  $("evTxt").innerHTML="P("+E[0]+") "+(st.mode==="mit"?"mit":"ohne")+" Zurücklegen, Summe der markierten Pfade. Simulation: "+(n?"<strong>"+fD(sim/n,3)+"</strong> ("+fN(sim)+" von "+fN(n)+")":"noch keine Ziehung")+".";
+  $("evCmp").textContent="Zum Vergleich "+(st.mode==="mit"?"ohne":"mit")+" Zurücklegen: "+fD(other,3);
+  $("nInfo").textContent=fN(n)+" Ziehungen";
+}
+function sync(){$("rR").value=st.r;$("rN").value=st.r;$("bR").value=st.b;$("bN").value=st.b;}
+function setRB(r,b){st.r=Math.max(1,Math.min(40,r));st.b=Math.max(1,Math.min(40,b));
+  if(st.r+st.b<st.d)st.b=st.d-st.r; sync();reset();render();}
+$("rR").addEventListener("input",e=>setRB(+e.target.value,st.b));$("bR").addEventListener("input",e=>setRB(st.r,+e.target.value));
+$("rN").addEventListener("change",e=>setRB(parseInt(e.target.value)||st.r,st.b));$("bN").addEventListener("change",e=>setRB(st.r,parseInt(e.target.value)||st.b));
+document.querySelectorAll("[data-pr]").forEach(b=>b.addEventListener("click",()=>{const [r,bb]=b.dataset.pr.split(",").map(Number);setRB(r,bb);}));
+segBind("m",v=>{st.mode=v;reset();render();});
+segBind("d",v=>{st.d=+v;fillEv();setRB(st.r,st.b);});
+$("ev").addEventListener("change",e=>{st.ev=+e.target.value;render();});
+$("one").addEventListener("click",()=>{drawOnce();render();});
+document.querySelectorAll("[data-add]").forEach(b=>b.addEventListener("click",()=>{for(let i=0;i<+b.dataset.add;i++)drawOnce();render();}));
+$("reset").addEventListener("click",()=>{reset();render();});
+onTheme(render);
+sync();fillEv();reset();for(let i=0;i<100;i++)drawOnce();render();
+})();
+</script>
+</body>
+</html>

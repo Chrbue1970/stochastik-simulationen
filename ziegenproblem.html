@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<title>Das Ziegenproblem</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --hell:#EAF1FA; --fg:#18212E; --muted:#596476; --line:#D6DFEA; --grid:#E6ECF3;
+  --accent:#1F5FA8; --accent-fg:#FFFFFF;
+  --s1:#1F5FA8; --s2:#C0392B; --s3:#2E8B57; --s4:#E07B18; --s5:#7B4BB7;
+  --s1-pale:#C6D6EC; --s2-pale:#F0C6C0;
+  --ref:#18212E; --band:rgba(242,194,48,.30); --dim:#E3E8EF;
+  --gelb:#F2C230; --gelb-bg:#FDF4D6;
+  --f-display:"Lexend","Segoe UI",system-ui,sans-serif;
+  --f-body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F141B; --surface:#171F2A; --hell:#1C2836; --fg:#E5EBF2; --muted:#9BA7B8; --line:#2B3747; --grid:#222C39;
+  --accent:#6EA6EA; --accent-fg:#0F141B;
+  --s1:#6EA6EA; --s2:#E8624F; --s3:#4FB582; --s4:#F0A04B; --s5:#B08AE6;
+  --s1-pale:#253A55; --s2-pale:#5C2C27;
+  --ref:#E5EBF2; --band:rgba(233,192,74,.22); --dim:#1F2833;
+  --gelb:#E9C04A; --gelb-bg:#2E2814; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F141B; --surface:#171F2A; --hell:#1C2836; --fg:#E5EBF2; --muted:#9BA7B8; --line:#2B3747; --grid:#222C39;
+  --accent:#6EA6EA; --accent-fg:#0F141B;
+  --s1:#6EA6EA; --s2:#E8624F; --s3:#4FB582; --s4:#F0A04B; --s5:#B08AE6;
+  --s1-pale:#253A55; --s2-pale:#5C2C27;
+  --ref:#E5EBF2; --band:rgba(233,192,74,.22); --dim:#1F2833;
+  --gelb:#E9C04A; --gelb-bg:#2E2814; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px;
+  font-variant-numeric:tabular-nums}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.2}
+h1{font-size:clamp(1.6rem,3.4vw,2.3rem);font-weight:700}
+h2{font-size:1.15rem;font-weight:600}
+p{margin:0}
+.ol{text-decoration:overline;text-decoration-thickness:1.5px}
+header{display:flex;flex-direction:column;gap:8px;border-bottom:3px solid var(--accent);padding-bottom:16px}
+.eyebrow{font-family:var(--f-display);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.eyebrow a{color:inherit}
+.lead{color:var(--muted);max-width:68ch}
+.main{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:820px){.main{grid-template-columns:minmax(0,1fr)}}
+.panel,.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.card{gap:10px;padding:16px}
+.stack{display:flex;flex-direction:column;gap:14px;min-width:0}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
+@media (max-width:820px){.row2{grid-template-columns:minmax(0,1fr)}}
+.headrow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.sub,.hint{color:var(--muted);font-size:.9rem}
+.ctrl{display:flex;flex-direction:column;gap:6px}
+.ctrl-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.ctrl-top label{font-weight:600}
+.smalllabel,.ctrl>label:not(.check){font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.num{display:flex;align-items:center;gap:4px;font-weight:700}
+.num input{width:4.8em;font:inherit;font-weight:700;text-align:right;padding:2px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg)}
+input[type=range]{width:100%;accent-color:var(--accent);margin:0}
+select{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);width:100%}
+button{font:inherit;cursor:pointer}
+.btn{background:var(--accent);color:var(--accent-fg);border:0;border-radius:8px;padding:9px 14px;font-weight:700}
+.btn:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.45;cursor:default;filter:none}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.btnrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.btnrow .btn{padding:8px 4px}
+.chip{border:1px solid var(--line);background:var(--hell);color:var(--fg);border-radius:999px;padding:4px 12px;font-size:.9rem}
+.chip:hover{border-color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+:focus-visible{outline:3px solid var(--gelb);outline-offset:2px}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{flex:1;border:0;background:var(--surface);color:var(--fg);padding:7px 6px;font-size:.9rem;line-height:1.25}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed=true]{background:var(--accent);color:var(--accent-fg);font-weight:700}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:.95rem}
+.check input{accent-color:var(--accent);margin-top:4px}
+.bignum{font-family:var(--f-display);font-size:2.4rem;font-weight:700;line-height:1;color:var(--accent)}
+canvas.chart{display:block;width:100%;height:280px}
+@media (max-width:640px){canvas.chart{height:230px}}
+.key{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.88rem;color:var(--muted)}
+.key span{display:flex;align-items:center;gap:6px}
+.key i{display:inline-block;width:18px;height:10px;border-radius:2px}
+.tscroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid var(--line);padding:6px 10px;text-align:right}
+th{background:var(--hell);text-align:center}
+.result{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:10px;padding:16px 18px;display:flex;flex-wrap:wrap;gap:8px 24px;align-items:center}
+.result .txt{flex:1;min-width:220px}
+.entdecken{background:var(--gelb-bg);border:1px solid var(--gelb);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.entdecken ol{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:10px;max-width:80ch}
+summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:.92rem}
+details p{margin-top:4px;font-size:.95rem}
+footer{color:var(--muted);font-size:.88rem}
+footer a{color:var(--accent)}
+[hidden]{display:none!important}
+
+/* Layout: oben die Spielshow mit Türen, darunter Auswertung des eigenen Spiels und der automatischen Runden nebeneinander. */
+.doors{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,130px));justify-content:center;gap:12px;padding-top:10px}
+.door{aspect-ratio:3/4.4;border-radius:10px 10px 4px 4px;border:2px solid var(--fg);background:var(--hell);color:var(--fg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-family:var(--f-display);font-weight:700;font-size:1.4rem;position:relative;padding:4px}
+.door:hover:not(:disabled){border-color:var(--accent)}
+.door:disabled{cursor:default}
+.door.pick{outline:4px solid var(--accent);outline-offset:2px}
+.door.goat{background:var(--dim);color:var(--muted);border-style:dashed}
+.door.car{background:var(--gelb);color:#18212E;border-color:#18212E}
+.door small{font-family:var(--f-body);font-size:.85rem;font-weight:600}
+.door .tag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:var(--accent-fg);font-size:.7rem;padding:1px 8px;border-radius:999px;font-family:var(--f-body);white-space:nowrap}
+.say{font-size:1.1rem;font-weight:600;min-height:3em}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.bars{display:flex;flex-direction:column;gap:12px}
+.bar{display:grid;grid-template-columns:90px minmax(0,1fr) 120px;gap:10px;align-items:center}
+.track{height:26px;background:var(--hell);border-radius:6px;position:relative;overflow:hidden}
+.fill{height:100%;border-radius:6px}
+.mark{position:absolute;top:-3px;bottom:-3px;width:3px;background:var(--ref)}
+.bar .v{text-align:right;font-weight:700}
+@media (max-width:500px){.bar{grid-template-columns:70px minmax(0,1fr) 92px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Stochastik · Simulation 5 · zu Modul 5, Aufgabe 5.5</span>
+    <h1>Das Ziegenproblem</h1>
+    <p class="lead">Hinter einer Tür steht ein Auto, hinter den anderen Ziegen. Du wählst eine Tür, der Moderator öffnet Ziegentüren, bis nur noch eine andere Tür zu ist. Bleibst du bei deiner Tür oder wechselst du?</p>
+  </header>
+
+  <section class="card">
+    <div class="headrow">
+      <h2>Selbst spielen</h2>
+      <div style="display:flex;gap:10px;align-items:center"><label for="kSel" class="hint">Anzahl Türen</label>
+        <select id="kSel" style="width:auto"><option>3</option><option>4</option><option>5</option><option>6</option><option>8</option><option>10</option></select></div>
+    </div>
+    <p class="say" id="say" aria-live="polite"></p>
+    <div class="doors" id="doors"></div>
+    <div class="actions" id="actions"></div>
+  </section>
+
+  <div class="row2">
+    <section class="card">
+      <h2>Deine Runden</h2>
+      <p class="sub" id="ownSub">Spiele ein paar Runden und probiere beide Strategien aus.</p>
+      <div class="bars" id="ownBars"></div>
+      <button class="btn ghost" id="ownReset" style="align-self:flex-start">Eigene Statistik löschen</button>
+    </section>
+    <section class="card">
+      <h2>Automatisch spielen</h2>
+      <p class="sub">Der Rechner spielt viele Runden mit der gewählten Türanzahl, einmal immer bleibend, einmal immer wechselnd.</p>
+      <div class="btnrow"><button class="btn" data-auto="10">+10</button><button class="btn" data-auto="100">+100</button><button class="btn" data-auto="1000">+1000</button></div>
+      <div class="bars" id="autoBars"></div>
+      <div class="key"><span><i style="background:var(--ref);width:3px;height:14px"></i>Wahrscheinlichkeit aus dem Baumdiagramm</span></div>
+      <button class="btn ghost" id="autoReset" style="align-self:flex-start">Zurücksetzen</button>
+    </section>
+  </div>
+
+  <section class="entdecken">
+    <h2>Entdecken</h2>
+    <ol>
+      <li>Spiele mindestens zehn Runden selbst, die Hälfte bleibend, die Hälfte wechselnd. Was vermutest du?
+        <details><summary>Lösungshinweis</summary><p>Mit wenigen Runden ist das Ergebnis oft noch unklar. Genau deshalb hilft die automatische Simulation.</p></details></li>
+      <li>Lass den Rechner 1000 Runden mit drei Türen spielen. Vergleiche die Gewinnquoten mit deinem Baumdiagramm aus Aufgabe 5.5.
+        <details><summary>Lösungshinweis</summary><p>Bleiben gewinnt in etwa 1/3 der Runden, Wechseln in etwa 2/3. Wer wechselt, verliert nur, wenn er am Anfang schon das Auto gewählt hatte.</p></details></li>
+      <li>Stelle zehn Türen ein und spiele selbst. Der Moderator öffnet acht Ziegentüren. Warum fühlt sich Wechseln jetzt fast zwingend an?
+        <details><summary>Lösungshinweis</summary><p>Deine erste Wahl trifft nur mit 1/10. In den anderen 9/10 der Fälle steht das Auto hinter der einzigen Tür, die der Moderator geschlossen lässt.</p></details></li>
+      <li>Stelle eine Formel für die Gewinnwahrscheinlichkeit beim Wechseln mit k Türen auf und prüfe sie mit der Simulation.
+        <details><summary>Lösungshinweis</summary><p>P(Gewinn beim Wechseln) = (k − 1)/k, P(Gewinn beim Bleiben) = 1/k.</p></details></li>
+    </ol>
+  </section>
+
+  <footer>Gehört zu: Stochastik-Wiederholung BG 13, Modul 5, Exkursion Ziegenproblem. Die Seite speichert keine Daten. <a href="./" style="color:var(--accent)">Alle Simulationen</a></footer>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const fN=n=>Math.round(n).toLocaleString("de-DE").replace(/\./g," ");
+const fD=(x,d)=>x.toFixed(d).replace(".",",");
+let C={};
+function readColors(){const cs=getComputedStyle(document.documentElement);
+  ["s1","s2","s3","s4","s5","s1-pale","s2-pale","ref","band","grid","muted","fg","surface","line","dim","accent","hell","gelb"].forEach(k=>C[k]=cs.getPropertyValue("--"+k).trim());}
+function onTheme(fn){readColors();const r=()=>{readColors();fn();};
+  const mq=matchMedia("(prefers-color-scheme: dark)");mq.addEventListener?mq.addEventListener("change",r):mq.addListener(r);
+  new MutationObserver(r).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+  let t;window.addEventListener("resize",()=>{clearTimeout(t);t=setTimeout(fn,80);});}
+function setupCanvas(cv){const dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;
+  if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);}
+  const ctx=cv.getContext("2d");ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
+  ctx.font="13px "+getComputedStyle(document.body).fontFamily;return {ctx,w,h};}
+function segBind(attr,fn){const bs=document.querySelectorAll("[data-"+attr+"]");
+  bs.forEach(b=>b.addEventListener("click",()=>{bs.forEach(x=>x.setAttribute("aria-pressed",String(x===b)));fn(b.dataset[attr]);}));}
+const REDUCE=matchMedia("(prefers-reduced-motion: reduce)").matches;
+/* Binomial und Normal */
+function lnFact(n){let s=0;for(let i=2;i<=n;i++)s+=Math.log(i);return s;}
+function binomPMF(n,p){const a=new Float64Array(n+1);
+  if(p<=0){a[0]=1;return a;} if(p>=1){a[n]=1;return a;}
+  const lf=[0];for(let i=1;i<=n;i++)lf[i]=lf[i-1]+Math.log(i);
+  for(let k=0;k<=n;k++)a[k]=Math.exp(lf[n]-lf[k]-lf[n-k]+k*Math.log(p)+(n-k)*Math.log(1-p));return a;}
+function erf(x){const t=1/(1+0.3275911*Math.abs(x));const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return x>=0?y:-y;}
+function Phi(z){return 0.5*(1+erf(z/Math.SQRT2));}
+function invPhi(q){let lo=-10,hi=10;for(let i=0;i<80;i++){const m=(lo+hi)/2;if(Phi(m)<q)lo=m;else hi=m;}return (lo+hi)/2;}
+function randBinom(n,p){let k=0;for(let i=0;i<n;i++)if(Math.random()<p)k++;return k;}
+
+(function(){
+let k=3,car,pick,closedOther,phase="pick",result=null,finalPick=null;
+const own={stay:[0,0],sw:[0,0]},auto={stay:[0,0],sw:[0,0]};
+function newRound(){car=Math.floor(Math.random()*k);pick=null;closedOther=null;phase="pick";result=null;finalPick=null;render();}
+function choose(i){
+  if(phase==="pick"){pick=i;
+    if(pick===car){do{closedOther=Math.floor(Math.random()*k);}while(closedOther===pick);}else closedOther=car;
+    phase="decide";render();}
+}
+function decide(sw){finalPick=sw?closedOther:pick;const win=finalPick===car;
+  const s=sw?own.sw:own.stay;s[0]+=win?1:0;s[1]++;result={sw,win};phase="done";render();}
+function render(){
+  const d=$("doors");d.innerHTML="";
+  for(let i=0;i<k;i++){const b=document.createElement("button");b.className="door";
+    let open=false;
+    if(phase!=="pick"&&i!==pick&&i!==closedOther)open=true;
+    if(phase==="done")open=true;
+    if(open){b.classList.add(i===car?"car":"goat");b.innerHTML=(i+1)+'<small>'+(i===car?"Auto":"Ziege")+'</small>';}
+    else b.innerHTML=String(i+1);
+    if(i===(phase==="done"?finalPick:pick))b.classList.add("pick");
+    if(phase!=="pick")b.disabled=true;
+    if(i===pick&&phase!=="pick")b.insertAdjacentHTML("beforeend",'<span class="tag">erste Wahl</span>');
+    b.setAttribute("aria-label","Tür "+(i+1)+(open?(i===car?", Auto":", Ziege"):""));
+    b.addEventListener("click",()=>choose(i));d.appendChild(b);}
+  const a=$("actions");a.innerHTML="";
+  if(phase==="pick"){$("say").textContent="Wähle eine Tür.";}
+  else if(phase==="decide"){
+    $("say").textContent="Du hast Tür "+(pick+1)+" gewählt. Der Moderator hat "+(k===3?"eine Ziegentür":(k-2)+" Ziegentüren")+" geöffnet. Bleibst du bei Tür "+(pick+1)+" oder wechselst du zu Tür "+(closedOther+1)+"?";
+    a.innerHTML='<button class="btn" id="bStay">Bei Tür '+(pick+1)+' bleiben</button><button class="btn" id="bSw">Zu Tür '+(closedOther+1)+' wechseln</button>';
+    $("bStay").onclick=()=>decide(false);$("bSw").onclick=()=>decide(true);}
+  else{$("say").textContent=(result.win?"Gewonnen! Das Auto stand hinter Tür ":"Leider eine Ziege. Das Auto stand hinter Tür ")+(car+1)+". Du hast "+(result.sw?"gewechselt.":"nicht gewechselt.");
+    a.innerHTML='<button class="btn" id="bNew">Neue Runde</button>';$("bNew").onclick=newRound;}
+  bars("ownBars",own,false);bars("autoBars",auto,true);
+}
+function bars(id,o,withMark){
+  const rows=[["Bleiben",o.stay,"var(--s2)",1/k],["Wechseln",o.sw,"var(--s3)",(k-1)/k]];
+  $(id).innerHTML=rows.map(([nm,[w,t],col,th])=>{const q=t?w/t:0;
+    return '<div class="bar"><span>'+nm+'</span><div class="track"><div class="fill" style="width:'+(q*100)+'%;background:'+col+'"></div>'+(withMark?'<span class="mark" style="left:calc('+(th*100)+'% - 1px)"></span>':'')+'</div><span class="v">'+(t?fD(q,3):"–")+' <span class="hint">('+fN(w)+"/"+fN(t)+')</span></span></div>';}).join("");
+}
+function autoPlay(nR){
+  for(let r=0;r<nR;r++){const c=Math.floor(Math.random()*k),p=Math.floor(Math.random()*k);
+    auto.stay[1]++;auto.sw[1]++;if(p===c)auto.stay[0]++;else auto.sw[0]++;}
+  render();
+}
+document.querySelectorAll("[data-auto]").forEach(b=>b.addEventListener("click",()=>autoPlay(+b.dataset.auto)));
+$("autoReset").onclick=()=>{auto.stay=[0,0];auto.sw=[0,0];render();};
+$("ownReset").onclick=()=>{own.stay=[0,0];own.sw=[0,0];render();};
+$("kSel").addEventListener("change",e=>{k=+e.target.value;auto.stay=[0,0];auto.sw=[0,0];own.stay=[0,0];own.sw=[0,0];newRound();});
+onTheme(render);
+newRound();
+})();
+</script>
+</body>
+</html>

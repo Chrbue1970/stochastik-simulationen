@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<title>Binomial-Explorer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --hell:#EAF1FA; --fg:#18212E; --muted:#596476; --line:#D6DFEA; --grid:#E6ECF3;
+  --accent:#1F5FA8; --accent-fg:#FFFFFF;
+  --s1:#1F5FA8; --s2:#C0392B; --s3:#2E8B57; --s4:#E07B18; --s5:#7B4BB7;
+  --s1-pale:#C6D6EC; --s2-pale:#F0C6C0;
+  --ref:#18212E; --band:rgba(242,194,48,.30); --dim:#E3E8EF;
+  --gelb:#F2C230; --gelb-bg:#FDF4D6;
+  --f-display:"Lexend","Segoe UI",system-ui,sans-serif;
+  --f-body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F141B; --surface:#171F2A; --hell:#1C2836; --fg:#E5EBF2; --muted:#9BA7B8; --line:#2B3747; --grid:#222C39;
+  --accent:#6EA6EA; --accent-fg:#0F141B;
+  --s1:#6EA6EA; --s2:#E8624F; --s3:#4FB582; --s4:#F0A04B; --s5:#B08AE6;
+  --s1-pale:#253A55; --s2-pale:#5C2C27;
+  --ref:#E5EBF2; --band:rgba(233,192,74,.22); --dim:#1F2833;
+  --gelb:#E9C04A; --gelb-bg:#2E2814; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F141B; --surface:#171F2A; --hell:#1C2836; --fg:#E5EBF2; --muted:#9BA7B8; --line:#2B3747; --grid:#222C39;
+  --accent:#6EA6EA; --accent-fg:#0F141B;
+  --s1:#6EA6EA; --s2:#E8624F; --s3:#4FB582; --s4:#F0A04B; --s5:#B08AE6;
+  --s1-pale:#253A55; --s2-pale:#5C2C27;
+  --ref:#E5EBF2; --band:rgba(233,192,74,.22); --dim:#1F2833;
+  --gelb:#E9C04A; --gelb-bg:#2E2814; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px;
+  font-variant-numeric:tabular-nums}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.2}
+h1{font-size:clamp(1.6rem,3.4vw,2.3rem);font-weight:700}
+h2{font-size:1.15rem;font-weight:600}
+p{margin:0}
+.ol{text-decoration:overline;text-decoration-thickness:1.5px}
+header{display:flex;flex-direction:column;gap:8px;border-bottom:3px solid var(--accent);padding-bottom:16px}
+.eyebrow{font-family:var(--f-display);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.eyebrow a{color:inherit}
+.lead{color:var(--muted);max-width:68ch}
+.main{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:820px){.main{grid-template-columns:minmax(0,1fr)}}
+.panel,.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.card{gap:10px;padding:16px}
+.stack{display:flex;flex-direction:column;gap:14px;min-width:0}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
+@media (max-width:820px){.row2{grid-template-columns:minmax(0,1fr)}}
+.headrow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.sub,.hint{color:var(--muted);font-size:.9rem}
+.ctrl{display:flex;flex-direction:column;gap:6px}
+.ctrl-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.ctrl-top label{font-weight:600}
+.smalllabel,.ctrl>label:not(.check){font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.num{display:flex;align-items:center;gap:4px;font-weight:700}
+.num input{width:4.8em;font:inherit;font-weight:700;text-align:right;padding:2px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg)}
+input[type=range]{width:100%;accent-color:var(--accent);margin:0}
+select{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);width:100%}
+button{font:inherit;cursor:pointer}
+.btn{background:var(--accent);color:var(--accent-fg);border:0;border-radius:8px;padding:9px 14px;font-weight:700}
+.btn:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.45;cursor:default;filter:none}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.btnrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.btnrow .btn{padding:8px 4px}
+.chip{border:1px solid var(--line);background:var(--hell);color:var(--fg);border-radius:999px;padding:4px 12px;font-size:.9rem}
+.chip:hover{border-color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+:focus-visible{outline:3px solid var(--gelb);outline-offset:2px}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{flex:1;border:0;background:var(--surface);color:var(--fg);padding:7px 6px;font-size:.9rem;line-height:1.25}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed=true]{background:var(--accent);color:var(--accent-fg);font-weight:700}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:.95rem}
+.check input{accent-color:var(--accent);margin-top:4px}
+.bignum{font-family:var(--f-display);font-size:2.4rem;font-weight:700;line-height:1;color:var(--accent)}
+canvas.chart{display:block;width:100%;height:280px}
+@media (max-width:640px){canvas.chart{height:230px}}
+.key{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.88rem;color:var(--muted)}
+.key span{display:flex;align-items:center;gap:6px}
+.key i{display:inline-block;width:18px;height:10px;border-radius:2px}
+.tscroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid var(--line);padding:6px 10px;text-align:right}
+th{background:var(--hell);text-align:center}
+.result{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:10px;padding:16px 18px;display:flex;flex-wrap:wrap;gap:8px 24px;align-items:center}
+.result .txt{flex:1;min-width:220px}
+.entdecken{background:var(--gelb-bg);border:1px solid var(--gelb);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.entdecken ol{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:10px;max-width:80ch}
+summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:.92rem}
+details p{margin-top:4px;font-size:.95rem}
+footer{color:var(--muted);font-size:.88rem}
+footer a{color:var(--accent)}
+[hidden]{display:none!important}
+
+/* Layout: links n, p und die Frage in Worten, rechts Histogramm mit markiertem Bereich und Ergebnis, darunter die Wertetabelle. */
+.term{font-family:var(--f-display);font-size:1.15rem;font-weight:600;line-height:1.6}
+.term sub{font-size:.65em}
+.kin{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.kin input{width:5em;font:inherit;font-weight:700;text-align:right;padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg)}
+.tabwrap{max-height:360px;overflow:auto;border:1px solid var(--line);border-radius:8px}
+.tabwrap table{min-width:420px}
+.tabwrap th{position:sticky;top:0}
+.tabwrap tr.in td{background:color-mix(in srgb,var(--s2) 14%,var(--surface))}
+.tabwrap tr.mu td:first-child{font-weight:700;color:var(--s4)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Binomial- und Normalverteilung · Simulation 8 · zu Modul 2 bis 4</span>
+    <h1>Binomial-Explorer</h1>
+    <p class="lead">Übersetze Fragen wie „höchstens“, „mindestens“ oder „zwischen“ in einen Term mit F<sub>n;p</sub> und sieh sofort, welche Säulen dazugehören. Mit der Tabelle findest du n, k oder p durch systematisches Probieren.</p>
+  </header>
+
+  <div class="main">
+    <section class="panel" aria-label="Einstellungen">
+      <div class="ctrl">
+        <div class="ctrl-top"><label for="nR">Anzahl n</label><span class="num"><input id="nN" type="number" min="1" max="300" aria-label="n"></span></div>
+        <input id="nR" type="range" min="1" max="300" step="1">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-top"><label for="pR">Trefferwahrscheinlichkeit p</label><span class="num"><input id="pN" type="number" min="0" max="1" step="0.01" aria-label="p"></span></div>
+        <input id="pR" type="range" min="0.01" max="0.99" step="0.01">
+      </div>
+      <div class="ctrl">
+        <label for="mode">Gesucht ist die Wahrscheinlichkeit für</label>
+        <select id="mode">
+          <option value="eq">genau k Treffer</option>
+          <option value="le">höchstens k Treffer</option>
+          <option value="lt">weniger als k Treffer</option>
+          <option value="ge">mindestens k Treffer</option>
+          <option value="gt">mehr als k Treffer</option>
+          <option value="bw">mindestens a und höchstens b Treffer</option>
+        </select>
+        <div class="kin" id="kin"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="sig"> Bereich μ ± σ einblenden</label>
+      <div class="ctrl"><span class="smalllabel">Beispiele laden</span>
+        <div class="chips">
+          <button class="chip" data-ex="20,0.1667,ge,2">20 Würfe, mindestens zwei Sechsen</button>
+          <button class="chip" data-ex="50,0.04,le,2">50 Akkus, höchstens 2 defekt (8.5)</button>
+          <button class="chip" data-ex="100,0.5,bw,45,55">100 Münzwürfe, 45 bis 55 Wappen</button>
+        </div></div>
+    </section>
+
+    <section class="stack">
+      <div class="result" aria-live="polite" style="border-left-color:var(--s2)">
+        <span class="bignum" id="big" style="color:var(--s2)">–</span>
+        <div class="txt"><p class="term" id="term"></p><p class="sub" id="kz"></p></div>
+      </div>
+      <div class="card">
+        <h2>Histogramm von B<sub>n;p</sub></h2>
+        <canvas class="chart" id="cv" aria-label="Histogramm der Binomialverteilung"></canvas>
+        <div class="key"><span><i style="background:var(--s2)"></i>gesuchter Bereich</span><span><i style="background:var(--s1-pale)"></i>übrige Werte</span><span><i style="background:var(--s4);width:3px;height:14px"></i>μ</span><span id="kSig" hidden><i style="background:var(--band)"></i>μ ± σ</span></div>
+      </div>
+    </section>
+  </div>
+
+  <section class="card">
+    <div class="headrow"><h2>Wertetabelle zum Probieren</h2><span class="sub">Rot hinterlegt: der gesuchte Bereich</span></div>
+    <div class="tabwrap"><table><thead><tr><th>k</th><th>B<sub>n;p</sub>(k) = P(X = k)</th><th>F<sub>n;p</sub>(k) = P(X ≤ k)</th><th>1 − F<sub>n;p</sub>(k − 1) = P(X ≥ k)</th></tr></thead><tbody id="tb"></tbody></table></div>
+  </section>
+
+  <section class="entdecken">
+    <h2>Entdecken</h2>
+    <ol>
+      <li>Wähle n = 20, p = 0,3. Vergleiche „höchstens 5“ und „weniger als 5“. Welche Säule macht den Unterschied?
+        <details><summary>Lösungshinweis</summary><p>P(X ≤ 5) = F(5), P(X &lt; 5) = F(4). Der Unterschied ist die Säule k = 5.</p></details></li>
+      <li>Warum rechnet man bei „mindestens k“ mit 1 − F(k − 1) und nicht mit 1 − F(k)?
+        <details><summary>Lösungshinweis</summary><p>Das Gegenereignis von „mindestens k“ ist „höchstens k − 1“. Die Säule k gehört zu „mindestens k“ und darf nicht abgezogen werden.</p></details></li>
+      <li>Lade „20 Würfe, mindestens zwei Sechsen“ und erhöhe n, bis die Wahrscheinlichkeit über 0,9 liegt (n gesucht, Aufgabe 4.3).
+        <details><summary>Lösungshinweis</summary><p>Ab n = 22 ist P(X ≥ 2) = 1 − F(1) größer als 0,9.</p></details></li>
+      <li>Blende μ ± σ ein und vervierfache n (z. B. von 25 auf 100). Wie verändert sich die Breite des Bereichs?
+        <details><summary>Lösungshinweis</summary><p>σ = √(n · p · (1 − p)) verdoppelt sich nur, wenn n vervierfacht wird (Wurzel-Regel, Aufgabe 3.5).</p></details></li>
+      <li>Suche mit der Tabelle bei n = 100, p = 0,5 das kleinste k mit P(X ≤ k) ≥ 0,95 (k gesucht).
+        <details><summary>Lösungshinweis</summary><p>F(57) ≈ 0,9334 und F(58) ≈ 0,9557, also k = 58.</p></details></li>
+    </ol>
+  </section>
+
+  <footer>Gehört zu: Binomial- und Normalverteilung BG 13, Module 2 bis 4. Die Seite speichert keine Daten. <a href="./" style="color:var(--accent)">Alle Simulationen</a></footer>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const fN=n=>Math.round(n).toLocaleString("de-DE").replace(/\./g," ");
+const fD=(x,d)=>x.toFixed(d).replace(".",",");
+let C={};
+function readColors(){const cs=getComputedStyle(document.documentElement);
+  ["s1","s2","s3","s4","s5","s1-pale","s2-pale","ref","band","grid","muted","fg","surface","line","dim","accent","hell","gelb"].forEach(k=>C[k]=cs.getPropertyValue("--"+k).trim());}
+function onTheme(fn){readColors();const r=()=>{readColors();fn();};
+  const mq=matchMedia("(prefers-color-scheme: dark)");mq.addEventListener?mq.addEventListener("change",r):mq.addListener(r);
+  new MutationObserver(r).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+  let t;window.addEventListener("resize",()=>{clearTimeout(t);t=setTimeout(fn,80);});}
+function setupCanvas(cv){const dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;
+  if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);}
+  const ctx=cv.getContext("2d");ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
+  ctx.font="13px "+getComputedStyle(document.body).fontFamily;return {ctx,w,h};}
+function segBind(attr,fn){const bs=document.querySelectorAll("[data-"+attr+"]");
+  bs.forEach(b=>b.addEventListener("click",()=>{bs.forEach(x=>x.setAttribute("aria-pressed",String(x===b)));fn(b.dataset[attr]);}));}
+const REDUCE=matchMedia("(prefers-reduced-motion: reduce)").matches;
+/* Binomial und Normal */
+function lnFact(n){let s=0;for(let i=2;i<=n;i++)s+=Math.log(i);return s;}
+function binomPMF(n,p){const a=new Float64Array(n+1);
+  if(p<=0){a[0]=1;return a;} if(p>=1){a[n]=1;return a;}
+  const lf=[0];for(let i=1;i<=n;i++)lf[i]=lf[i-1]+Math.log(i);
+  for(let k=0;k<=n;k++)a[k]=Math.exp(lf[n]-lf[k]-lf[n-k]+k*Math.log(p)+(n-k)*Math.log(1-p));return a;}
+function erf(x){const t=1/(1+0.3275911*Math.abs(x));const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return x>=0?y:-y;}
+function Phi(z){return 0.5*(1+erf(z/Math.SQRT2));}
+function invPhi(q){let lo=-10,hi=10;for(let i=0;i<80;i++){const m=(lo+hi)/2;if(Phi(m)<q)lo=m;else hi=m;}return (lo+hi)/2;}
+function randBinom(n,p){let k=0;for(let i=0;i<n;i++)if(Math.random()<p)k++;return k;}
+
+(function(){
+const st={n:20,p:0.3,mode:"le",k:5,a:4,b:8,sig:false};
+let pm,F;
+function calc(){pm=binomPMF(st.n,st.p);F=new Float64Array(st.n+1);let s=0;for(let k=0;k<=st.n;k++){s+=pm[k];F[k]=Math.min(1,s);}}
+const Fv=k=>k<0?0:k>=st.n?1:F[k];
+const fP=x=>{const v=fD(x,4);return v;};
+const pS=()=>{const d=Math.abs(st.p*100-Math.round(st.p*100))<1e-9?2:4;return fD(st.p,d).replace(/0+$/,"").replace(/,$/,"");};
+function range(){const n=st.n,k=Math.max(0,Math.min(n,st.k));
+  switch(st.mode){case"eq":return [k,k];case"le":return [0,k];case"lt":return [0,k-1];case"ge":return [k,n];case"gt":return [k+1,n];
+    case"bw":return [Math.max(0,Math.min(st.a,st.b)),Math.min(n,Math.max(st.a,st.b))];}}
+function kInputs(){
+  const el=$("kin");
+  if(st.mode==="bw")el.innerHTML='<label for="aIn">a =</label><input id="aIn" type="number" min="0"><label for="bIn">b =</label><input id="bIn" type="number" min="0">';
+  else el.innerHTML='<label for="kIn">k =</label><input id="kIn" type="number" min="0">';
+  if(st.mode==="bw"){$("aIn").value=st.a;$("bIn").value=st.b;
+    $("aIn").addEventListener("input",e=>{st.a=Math.max(0,parseInt(e.target.value)||0);render();});
+    $("bIn").addEventListener("input",e=>{st.b=Math.max(0,parseInt(e.target.value)||0);render();});}
+  else{$("kIn").value=st.k;$("kIn").addEventListener("input",e=>{st.k=Math.max(0,parseInt(e.target.value)||0);render();});}
+}
+function termHTML(){
+  const n=st.n,F_=x=>"F<sub>"+n+";"+pS()+"</sub>("+x+")",B_=x=>"B<sub>"+n+";"+pS()+"</sub>("+x+")",k=st.k;
+  let lhs,rhs,val;
+  switch(st.mode){
+    case"eq":lhs="P(X = "+k+")";rhs=B_(k);val=k<=n?pm[k]:0;break;
+    case"le":lhs="P(X ≤ "+k+")";rhs=F_(k);val=Fv(k);break;
+    case"lt":lhs="P(X &lt; "+k+") = P(X ≤ "+(k-1)+")";rhs=F_(k-1);val=Fv(k-1);break;
+    case"ge":lhs="P(X ≥ "+k+")";rhs="1 − "+F_(k-1);val=1-Fv(k-1);break;
+    case"gt":lhs="P(X &gt; "+k+") = P(X ≥ "+(k+1)+")";rhs="1 − "+F_(k);val=1-Fv(k);break;
+    case"bw":{const [a,b]=range();lhs="P("+a+" ≤ X ≤ "+b+")";rhs=F_(b)+" − "+F_(a-1);val=Fv(b)-Fv(a-1);}}
+  return {html:lhs+" = "+rhs,val:Math.max(0,val)};
+}
+function draw(){
+  const cv=$("cv"),{ctx,w,h}=setupCanvas(cv),L=52,R=12,T=12,B=30,W=w-L-R,H=h-T-B,n=st.n;
+  const mu=n*st.p,sg=Math.sqrt(n*st.p*(1-st.p));
+  let lo=0,hi=n;if(n>40){lo=Math.max(0,Math.floor(mu-5*sg-2));hi=Math.min(n,Math.ceil(mu+5*sg+2));}
+  const [ra,rb]=range();lo=Math.min(lo,Math.max(0,ra-1));hi=Math.max(hi,Math.min(n,rb+1));if(st.mode==="ge"||st.mode==="gt")hi=Math.max(hi,Math.min(n,ra+3));
+  let ym=0;for(let k=lo;k<=hi;k++)ym=Math.max(ym,pm[k]);ym*=1.12;
+  const cnt=hi-lo+1,bw=W/cnt,X=k=>L+(k-lo+0.5)*bw,Y=v=>T+(1-v/ym)*H;
+  ctx.strokeStyle=C.grid;ctx.fillStyle=C.muted;ctx.lineWidth=1;ctx.textAlign="right";ctx.textBaseline="middle";
+  const steps=[0.01,0.02,0.05,0.1,0.2,0.25,0.5];const s=steps.find(x=>ym/x<=6)||0.5;
+  for(let v=0;v<=ym;v+=s){ctx.beginPath();ctx.moveTo(L,Y(v));ctx.lineTo(L+W,Y(v));ctx.stroke();ctx.fillText(fD(v,s<0.05?2:2),L-6,Y(v));}
+  if(st.sig){ctx.fillStyle=C.band;ctx.fillRect(X(mu-sg)-0,T,(2*sg)*bw,H);}
+  for(let k=lo;k<=hi;k++){const inR=k>=ra&&k<=rb;ctx.fillStyle=inR?C.s2:C["s1-pale"];const gap=bw>6?1:0;
+    ctx.fillRect(X(k)-bw/2+gap,Y(pm[k]),bw-2*gap,Y(0)-Y(pm[k]));}
+  ctx.strokeStyle=C.s4;ctx.lineWidth=2;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(X(mu),T);ctx.lineTo(X(mu),T+H);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle=C.muted;ctx.textAlign="center";ctx.textBaseline="top";
+  const lstep=[1,2,5,10,20,25,50].find(x=>cnt/x<=14)||50;
+  for(let k=Math.ceil(lo/lstep)*lstep;k<=hi;k+=lstep)ctx.fillText(k,X(k),T+H+6);
+}
+function table(){const [ra,rb]=range(),mu=Math.round(st.n*st.p);let h="";
+  for(let k=0;k<=st.n;k++)h+='<tr class="'+(k>=ra&&k<=rb?"in":"")+(k===mu?" mu":"")+'"><td>'+k+'</td><td>'+fP(pm[k])+'</td><td>'+fP(Fv(k))+'</td><td>'+fP(1-Fv(k-1))+'</td></tr>';
+  $("tb").innerHTML=h;}
+function render(){
+  calc();const t=termHTML();$("term").innerHTML=t.html;$("big").textContent=fD(t.val,4);
+  const mu=st.n*st.p,sg=Math.sqrt(st.n*st.p*(1-st.p));
+  $("kz").textContent="μ = n · p = "+fD(mu,2)+", σ = √(n · p · (1 − p)) ≈ "+fD(sg,2);
+  $("kSig").hidden=!st.sig;draw();table();
+  $("nR").value=st.n;$("nN").value=st.n;$("pR").value=st.p;$("pN").value=Math.round(st.p*10000)/10000;
+}
+$("nR").addEventListener("input",e=>{st.n=+e.target.value;render();});
+$("nN").addEventListener("change",e=>{st.n=Math.max(1,Math.min(300,parseInt(e.target.value)||1));render();});
+$("pR").addEventListener("input",e=>{st.p=+e.target.value;render();});
+$("pN").addEventListener("change",e=>{let v=parseFloat(String(e.target.value).replace(",","."));if(!isFinite(v))v=st.p;st.p=Math.max(0.0001,Math.min(0.9999,v));render();});
+$("mode").addEventListener("change",e=>{st.mode=e.target.value;kInputs();render();});
+$("sig").addEventListener("change",e=>{st.sig=e.target.checked;render();});
+document.querySelectorAll("[data-ex]").forEach(b=>b.addEventListener("click",()=>{const v=b.dataset.ex.split(",");
+  st.n=+v[0];st.p=+v[1];st.mode=v[2];if(st.mode==="bw"){st.a=+v[3];st.b=+v[4];}else st.k=+v[3];$("mode").value=st.mode;kInputs();render();}));
+onTheme(render);
+$("mode").value=st.mode;kInputs();render();
+})();
+</script>
+</body>
+</html>

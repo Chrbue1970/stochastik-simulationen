@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<title>Würfe bis 10 000</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* Layout: Kopfzeile wie im Arbeitsheft, links Versuchsaufbau, rechts zwei Verläufe übereinander, darunter Tabelle, Gedächtnis-Test und Entdecken-Aufträge. */
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --hell:#EAF1FA; --fg:#18212E; --muted:#596476; --line:#D6DFEA; --grid:#E6ECF3;
+  --accent:#1F5FA8; --accent-fg:#FFFFFF;
+  --s1:#1F5FA8; --s2:#C0392B; --s3:#2E8B57; --s4:#E07B18; --s5:#7B4BB7;
+  --ref:#18212E; --band:rgba(242,194,48,.28);
+  --gelb:#F2C230; --gelb-bg:#FDF4D6;
+  --f-display:"Lexend","Segoe UI",system-ui,sans-serif;
+  --f-body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F141B; --surface:#171F2A; --hell:#1C2836; --fg:#E5EBF2; --muted:#9BA7B8; --line:#2B3747; --grid:#222C39;
+  --accent:#6EA6EA; --accent-fg:#0F141B;
+  --s1:#6EA6EA; --s2:#E8624F; --s3:#4FB582; --s4:#F0A04B; --s5:#B08AE6;
+  --ref:#E5EBF2; --band:rgba(233,192,74,.22);
+  --gelb:#E9C04A; --gelb-bg:#2E2814; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F141B; --surface:#171F2A; --hell:#1C2836; --fg:#E5EBF2; --muted:#9BA7B8; --line:#2B3747; --grid:#222C39;
+  --accent:#6EA6EA; --accent-fg:#0F141B;
+  --s1:#6EA6EA; --s2:#E8624F; --s3:#4FB582; --s4:#F0A04B; --s5:#B08AE6;
+  --ref:#E5EBF2; --band:rgba(233,192,74,.22);
+  --gelb:#E9C04A; --gelb-bg:#2E2814; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px;
+  font-variant-numeric:tabular-nums}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.2}
+h1{font-size:clamp(1.6rem,3.4vw,2.3rem);font-weight:700}
+h2{font-size:1.15rem;font-weight:600}
+p{margin:0}
+header{display:flex;flex-direction:column;gap:8px;border-bottom:3px solid var(--accent);padding-bottom:16px}
+.eyebrow{font-family:var(--f-display);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.lead{color:var(--muted);max-width:68ch}
+
+.main{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:820px){.main{grid-template-columns:minmax(0,1fr)}}
+.panel,.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.card{gap:10px;padding:16px}
+.card .sub,.hint{color:var(--muted);font-size:.9rem}
+.ctrl{display:flex;flex-direction:column;gap:6px}
+.ctrl>label,.smalllabel{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+select{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);width:100%}
+button{font:inherit;cursor:pointer}
+.btn{background:var(--accent);color:var(--accent-fg);border:0;border-radius:8px;padding:9px 14px;font-weight:700}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.btnrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.btnrow .btn{padding:8px 4px}
+:focus-visible{outline:3px solid var(--gelb);outline-offset:2px}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{flex:1;border:0;background:var(--surface);color:var(--fg);padding:7px 6px;font-size:.9rem;line-height:1.25}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed=true]{background:var(--accent);color:var(--accent-fg);font-weight:700}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:.95rem}
+.check input{accent-color:var(--accent);margin-top:4px}
+
+.counter{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.counter .big{font-family:var(--f-display);font-size:2.4rem;font-weight:700;line-height:1;color:var(--accent)}
+.strip{display:flex;flex-wrap:wrap;gap:3px;min-height:26px}
+.tok{width:22px;height:22px;border-radius:4px;display:grid;place-items:center;font-size:.78rem;font-weight:700;background:var(--hell);color:var(--muted)}
+.tok.hit{background:var(--s1);color:var(--accent-fg)}
+
+.charts{display:flex;flex-direction:column;gap:14px;min-width:0}
+canvas{display:block;width:100%;height:260px}
+@media (max-width:640px){canvas{height:220px}}
+.key{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.88rem;color:var(--muted)}
+.key span{display:flex;align-items:center;gap:6px}
+.key i{display:inline-block;width:18px;height:3px;border-radius:2px}
+.key i.band{height:10px;background:var(--band)}
+.key i.ref{background:var(--ref);height:2px}
+
+.lower{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:20px}
+@media (max-width:820px){.lower{grid-template-columns:minmax(0,1fr)}}
+.tscroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:420px}
+th,td{border:1px solid var(--line);padding:6px 10px;text-align:right}
+th{background:var(--hell);text-align:center}
+td:first-child{text-align:left;font-weight:600}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:baseline}
+.mem .big{font-family:var(--f-display);font-size:2rem;font-weight:700;color:var(--accent);line-height:1.1}
+
+.entdecken{background:var(--gelb-bg);border:1px solid var(--gelb);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.entdecken ol{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:10px;max-width:80ch}
+summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:.92rem}
+details p{margin-top:4px;font-size:.95rem}
+footer{color:var(--muted);font-size:.88rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Stochastik · Simulation 1 · zu Modul 1, Aufgaben 1.3 und 1.4</span>
+    <h1>Das Gesetz der großen Zahlen</h1>
+    <p class="lead">Wirf eine Münze oder einen Würfel bis zu 10&nbsp;000-mal, auch in mehreren Versuchsreihen gleichzeitig. Oben siehst du, wie sich die relative Häufigkeit entwickelt, unten, wie weit die absolute Anzahl vom Erwartungswert abweicht.</p>
+  </header>
+
+  <div class="main">
+    <section class="panel" aria-label="Versuchsaufbau">
+      <div class="ctrl">
+        <label for="exp">Zufallsgerät</label>
+        <select id="exp">
+          <option value="coin">Münze</option>
+          <option value="die">Würfel</option>
+          <option value="schief">Schiefer Holzwürfel (Aufgabe 1.3)</option>
+        </select>
+      </div>
+      <div class="ctrl">
+        <label for="tgt">Treffer ist</label>
+        <select id="tgt"></select>
+      </div>
+      <div class="ctrl">
+        <span class="smalllabel">Versuchsreihen</span>
+        <div class="seg" role="group" aria-label="Anzahl der Versuchsreihen" id="segS">
+          <button data-s="1" aria-pressed="true">1</button><button data-s="2" aria-pressed="false">2</button><button data-s="3" aria-pressed="false">3</button><button data-s="5" aria-pressed="false">5</button>
+        </div>
+      </div>
+      <div class="ctrl">
+        <span class="smalllabel">Werfen</span>
+        <div class="btnrow">
+          <button class="btn" data-add="10">+10</button>
+          <button class="btn" data-add="100">+100</button>
+          <button class="btn" data-add="1000">+1000</button>
+        </div>
+        <button class="btn" id="all">Bis 10&nbsp;000 werfen</button>
+        <button class="btn ghost" id="reset">Von vorn mit neuen Würfen</button>
+      </div>
+      <div class="counter"><span class="big" id="nBig">0</span><span class="hint">Würfe je Versuchsreihe</span></div>
+      <div class="ctrl">
+        <span class="smalllabel">Letzte Würfe der Reihe 1</span>
+        <div class="strip" id="strip"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="band" checked> Zufallsbereich einblenden (gelb, etwa 95&nbsp;% der Versuchsreihen liegen darin)</label>
+    </section>
+
+    <section class="charts">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+          <h2>Relative Häufigkeit h</h2>
+          <div class="seg" role="group" aria-label="Achse" style="min-width:210px">
+            <button data-x="log" aria-pressed="true">log. Achse</button><button data-x="lin" aria-pressed="false">lineare Achse</button>
+          </div>
+        </div>
+        <canvas id="cRel" aria-label="Verlauf der relativen Häufigkeit"></canvas>
+        <div class="key" id="keyRel"></div>
+      </div>
+      <div class="card">
+        <h2>Abweichung der Trefferzahl: H − n · p</h2>
+        <p class="sub">Wie viele Treffer mehr oder weniger als erwartet? Achte darauf, ob diese Zahl kleiner wird.</p>
+        <canvas id="cAbs" aria-label="Verlauf der absoluten Abweichung"></canvas>
+      </div>
+    </section>
+  </div>
+
+  <div class="lower">
+    <section class="card">
+      <h2>Stand der Versuchsreihen</h2>
+      <div class="tscroll"><table>
+        <thead><tr><th>Reihe</th><th>Würfe n</th><th>Treffer H</th><th>rel. Häufigkeit h</th><th>H − n · p</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table></div>
+      <p class="sub" id="pInfo"></p>
+    </section>
+    <section class="card mem">
+      <h2>Hat der Zufall ein Gedächtnis?</h2>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <span class="hint">Betrachte alle Stellen nach</span>
+        <div class="seg" role="group" aria-label="Länge der Trefferserie" style="min-width:150px">
+          <button data-k="3" aria-pressed="true">3</button><button data-k="5" aria-pressed="false">5</button>
+        </div>
+        <span class="hint">Treffern in Folge.</span>
+      </div>
+      <span class="big" id="memBig">–</span>
+      <p id="memTxt"></p>
+    </section>
+  </div>
+
+  <section class="entdecken">
+    <h2>Entdecken</h2>
+    <ol>
+      <li>Münze, eine Versuchsreihe: Wirf zuerst nur 10-mal, dann bis 10&nbsp;000. Beschreibe, wie sich h verhält. Fällt am Ende genau 5&nbsp;000-mal Wappen?
+        <details><summary>Lösungshinweis</summary><p>Am Anfang springt h stark, später schwankt es nur noch wenig um 0,5. Genau 5&nbsp;000 Wappen sind selten, die Trefferzahl liegt meist irgendwo zwischen etwa 4&nbsp;900 und 5&nbsp;100 (Aussagen 2 und 3 in Aufgabe 1.4).</p></details></li>
+      <li>Stelle fünf Versuchsreihen ein und wirf bis 10&nbsp;000. Vergleiche die Reihen nach 10, 100 und 10&nbsp;000 Würfen.
+        <details><summary>Lösungshinweis</summary><p>Nach wenigen Würfen liegen die Reihen weit auseinander, mit wachsendem n laufen alle in den gelben Trichter um p hinein.</p></details></li>
+      <li>Schau dir das untere Diagramm an. Wird die Differenz zwischen Wappen-Anzahl und halber Wurfzahl immer kleiner? Entscheide damit Aussage 4 aus Aufgabe 1.4.
+        <details><summary>Lösungshinweis</summary><p>Nein. Die absolute Abweichung wird typischerweise sogar größer (der gelbe Bereich wächst mit der Wurzel aus n). Nur die relative Abweichung, also geteilt durch n, wird kleiner. Aussage 4 ist falsch.</p></details></li>
+      <li>Wirf mit der Münze bis 10&nbsp;000 und stelle im Kasten „Gedächtnis“ auf 5. Ist Zahl nach fünfmal Wappen wahrscheinlicher? Entscheide damit Aussage 1.
+        <details><summary>Lösungshinweis</summary><p>Nach fünf Wappen folgt Wappen ungefähr genauso oft wie sonst, also in etwa der Hälfte der Fälle. Die Münze hat kein Gedächtnis, Aussage 1 ist falsch.</p></details></li>
+      <li>Wähle den schiefen Holzwürfel und als Treffer die 3. Schätze P(3) nach 400 Würfen wie in Aufgabe 1.3 und dann nach 10&nbsp;000 Würfen. Welche Schätzung ist verlässlicher?
+        <details><summary>Lösungshinweis</summary><p>In der Simulation gilt P(1) = P(6) = 0,08, P(2) = P(5) = 0,16 und P(3) = P(4) = 0,26. Nach 400 Würfen weichen die Reihen noch um einige Prozentpunkte ab, nach 10&nbsp;000 Würfen kaum noch.</p></details></li>
+    </ol>
+  </section>
+
+  <footer>Gehört zu: Stochastik-Wiederholung BG 13, Modul 1 „Zufallsexperimente, Ereignisse und Häufigkeiten“. Die Seite speichert keine Daten. <a href="./" style="color:var(--accent)">Alle Simulationen</a></footer>
+</div>
+
+<script>
+(function(){
+const MAX=10000;
+const EXP={
+  coin:{names:["Wappen","Zahl"],short:["W","Z"],p:[.5,.5]},
+  die:{names:["1","2","3","4","5","6"],short:["1","2","3","4","5","6"],p:[1,1,1,1,1,1].map(x=>x/6)},
+  schief:{names:["1","2","3","4","5","6"],short:["1","2","3","4","5","6"],p:[.08,.16,.26,.26,.16,.08]}
+};
+const st={exp:"coin",tgt:0,m:1,n:0,goal:0,xs:"log",k:3,band:true};
+let out=[],cum=[];
+
+const $=id=>document.getElementById(id);
+const fN=n=>Math.round(n).toLocaleString("de-DE").replace(/\./g," ");
+const fD=(x,d)=>x.toFixed(d).replace(".",",");
+const fS=x=>(x>0?"+":x<0?"−":"±")+fD(Math.abs(x),Math.abs(x)%1?1:0);
+
+function pHit(){return EXP[st.exp].p[st.tgt];}
+function rollAll(){
+  const P=EXP[st.exp].p,c=[];let s=0;P.forEach(v=>{s+=v;c.push(s);});
+  out=[];for(let r=0;r<5;r++){const a=new Uint8Array(MAX);
+    for(let i=0;i<MAX;i++){const u=Math.random();let j=0;while(j<c.length-1&&u>=c[j])j++;a[i]=j;}out.push(a);}
+  recum();st.n=0;st.goal=0;
+}
+function recum(){
+  cum=out.map(a=>{const c=new Int32Array(MAX+1);for(let i=0;i<MAX;i++)c[i+1]=c[i]+(a[i]===st.tgt?1:0);return c;});
+}
+function fillTgt(){
+  const t=$("tgt");t.innerHTML="";
+  EXP[st.exp].names.forEach((nm,i)=>{const o=document.createElement("option");o.value=i;
+    o.textContent=(st.exp==="coin"?nm:"Augenzahl "+nm)+(st.exp==="schief"?"":"  (p = "+(st.exp==="coin"?"0,5":"1/6")+")");t.appendChild(o);});
+  st.tgt=st.exp==="die"?5:st.exp==="schief"?2:0;t.value=st.tgt;
+}
+
+/* Farben */
+let C={};
+function readColors(){const cs=getComputedStyle(document.documentElement);
+  ["s1","s2","s3","s4","s5","ref","band","grid","muted","fg","surface","line"].forEach(k=>C[k]=cs.getPropertyValue("--"+k).trim());}
+const SC=()=>[C.s1,C.s2,C.s3,C.s4,C.s5];
+
+/* Diagramm */
+function setup(cv){const dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;
+  if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);}
+  const ctx=cv.getContext("2d");ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);return {ctx,w,h};}
+function xAxis(){
+  if(st.xs==="log"){return {min:1,max:MAX,f:n=>Math.log10(Math.max(n,1))/4,ticks:[1,10,100,1000,10000]};}
+  let mx=10;const n=Math.max(st.n,10);const steps=[10,20,50,100,200,500,1000,2000,5000,10000];
+  for(const s of steps){if(s>=n){mx=s;break;}}
+  const t=[];for(let i=0;i<=4;i++)t.push(mx*i/4);
+  return {min:0,max:mx,f:n=>n/mx,ticks:t};
+}
+function samples(xa){
+  const N=st.n,pts=[];if(N<1)return pts;
+  if(st.xs==="log"){for(let n=1;n<=N;){pts.push(n);n=n<200?n+1:Math.ceil(n*1.01);}if(pts[pts.length-1]!==N)pts.push(N);}
+  else{const step=Math.max(1,Math.floor(xa.max/700));for(let n=1;n<=N;n+=step)pts.push(n);if(pts[pts.length-1]!==N)pts.push(N);}
+  return pts;
+}
+function draw(){
+  const xa=xAxis(),p=pHit(),pts=samples(xa),cols=SC();
+  // Diagramm 1: relative Häufigkeit
+  {const cv=$("cRel"),{ctx,w,h}=setup(cv),L=48,R=26,T=12,B=34,W=w-L-R,H=h-T-B;
+   const X=n=>L+xa.f(n)*W,Y=v=>T+(1-v)*H;
+   ctx.font="13px "+getComputedStyle(document.body).fontFamily;ctx.lineWidth=1;
+   ctx.strokeStyle=C.grid;ctx.fillStyle=C.muted;ctx.textAlign="right";ctx.textBaseline="middle";
+   for(let v=0;v<=1.0001;v+=0.25){ctx.beginPath();ctx.moveTo(L,Y(v));ctx.lineTo(L+W,Y(v));ctx.stroke();ctx.fillText(fD(v,2),L-6,Y(v));}
+   ctx.textAlign="center";ctx.textBaseline="top";
+   xa.ticks.forEach(t=>{ctx.beginPath();ctx.moveTo(X(t),T);ctx.lineTo(X(t),T+H);ctx.stroke();ctx.fillText(fN(t),X(t),T+H+6);});
+   if(st.band){ctx.fillStyle=C.band;ctx.beginPath();const bp=[];
+     const bx=st.xs==="log"?Array.from({length:201},(_,i)=>Math.pow(10,i/50)):Array.from({length:201},(_,i)=>Math.max(1,xa.max*i/200));
+     bx.forEach((n,i)=>{const v=Math.min(1,p+2*Math.sqrt(p*(1-p)/n));i?ctx.lineTo(X(n),Y(v)):ctx.moveTo(X(n),Y(v));});
+     for(let i=bx.length-1;i>=0;i--){const n=bx[i];ctx.lineTo(X(n),Y(Math.max(0,p-2*Math.sqrt(p*(1-p)/n))));}
+     ctx.closePath();ctx.fill();}
+   ctx.strokeStyle=C.ref;ctx.setLineDash([6,4]);ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(L,Y(p));ctx.lineTo(L+W,Y(p));ctx.stroke();ctx.setLineDash([]);
+   ctx.save();ctx.beginPath();ctx.rect(L,T-2,W+2,H+4);ctx.clip();
+   for(let r=st.m-1;r>=0;r--){ctx.strokeStyle=cols[r];ctx.lineWidth=2;ctx.beginPath();
+     pts.forEach((n,i)=>{const v=cum[r][n]/n;i?ctx.lineTo(X(n),Y(v)):ctx.moveTo(X(n),Y(v));});ctx.stroke();}
+   ctx.restore();
+   ctx.fillStyle=C.muted;ctx.textAlign="right";ctx.textBaseline="bottom";ctx.fillText("n",L+W,T+H-4);
+  }
+  // Diagramm 2: absolute Abweichung
+  {const cv=$("cAbs"),{ctx,w,h}=setup(cv),L=48,R=26,T=12,B=34,W=w-L-R,H=h-T-B;
+   let m=5;for(let r=0;r<st.m;r++)for(const n of pts)m=Math.max(m,Math.abs(cum[r][n]-n*p));
+   if(st.band)m=Math.max(m,2*Math.sqrt((st.xs==="log"?MAX:xa.max)*p*(1-p)));
+   const nice=[5,10,20,25,50,100,150,200,250,300,400,500,750,1000];let ym=nice.find(v=>v>=m*1.05)||Math.ceil(m/100)*100;
+   const X=n=>L+xa.f(n)*W,Y=v=>T+(1-(v+ym)/(2*ym))*H;
+   ctx.font="13px "+getComputedStyle(document.body).fontFamily;ctx.lineWidth=1;
+   ctx.strokeStyle=C.grid;ctx.fillStyle=C.muted;ctx.textAlign="right";ctx.textBaseline="middle";
+   [-ym,-ym/2,0,ym/2,ym].forEach(v=>{ctx.beginPath();ctx.moveTo(L,Y(v));ctx.lineTo(L+W,Y(v));ctx.stroke();ctx.fillText((v>0?"+":v<0?"−":"")+fN(Math.abs(v)),L-6,Y(v));});
+   ctx.textAlign="center";ctx.textBaseline="top";
+   xa.ticks.forEach(t=>{ctx.beginPath();ctx.moveTo(X(t),T);ctx.lineTo(X(t),T+H);ctx.stroke();ctx.fillText(fN(t),X(t),T+H+6);});
+   if(st.band){ctx.fillStyle=C.band;ctx.beginPath();
+     const bx=st.xs==="log"?Array.from({length:201},(_,i)=>Math.pow(10,i/50)):Array.from({length:201},(_,i)=>Math.max(1,xa.max*i/200));
+     bx.forEach((n,i)=>{const v=2*Math.sqrt(n*p*(1-p));i?ctx.lineTo(X(n),Y(v)):ctx.moveTo(X(n),Y(v));});
+     for(let i=bx.length-1;i>=0;i--){const n=bx[i];ctx.lineTo(X(n),Y(-2*Math.sqrt(n*p*(1-p))));}
+     ctx.closePath();ctx.fill();}
+   ctx.strokeStyle=C.ref;ctx.setLineDash([6,4]);ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(L,Y(0));ctx.lineTo(L+W,Y(0));ctx.stroke();ctx.setLineDash([]);
+   ctx.save();ctx.beginPath();ctx.rect(L,T-2,W+2,H+4);ctx.clip();
+   for(let r=st.m-1;r>=0;r--){ctx.strokeStyle=cols[r];ctx.lineWidth=2;ctx.beginPath();
+     pts.forEach((n,i)=>{const v=cum[r][n]-n*p;i?ctx.lineTo(X(n),Y(v)):ctx.moveTo(X(n),Y(v));});ctx.stroke();}
+   ctx.restore();
+   ctx.fillStyle=C.muted;ctx.textAlign="right";ctx.textBaseline="bottom";ctx.fillText("n",L+W,T+H-4);
+  }
+}
+
+function render(){
+  const p=pHit(),n=st.n,E=EXP[st.exp];
+  $("nBig").textContent=fN(n);
+  // Legende
+  let kh="";for(let r=0;r<st.m;r++)kh+='<span><i style="background:var(--s'+(r+1)+')"></i>Reihe '+(r+1)+'</span>';
+  kh+='<span><i class="ref"></i>p = '+(st.exp==="coin"?"0,5":st.exp==="die"?"1/6":fD(p,2))+'</span>';
+  if(st.band)kh+='<span><i class="band"></i>Zufallsbereich</span>';
+  $("keyRel").innerHTML=kh;
+  // Tabelle
+  let tb="";for(let r=0;r<st.m;r++){const H=cum[r][n];
+    tb+='<tr><td><span class="dot" style="background:var(--s'+(r+1)+')"></span>Reihe '+(r+1)+'</td><td>'+fN(n)+'</td><td>'+fN(H)+'</td><td>'+(n?fD(H/n,4):"–")+'</td><td>'+(n?fS(H-n*p):"–")+'</td></tr>';}
+  $("tbody").innerHTML=tb;
+  $("pInfo").textContent="Treffer: "+(st.exp==="coin"?E.names[st.tgt]:"Augenzahl "+E.names[st.tgt])+". Wahrscheinlichkeit p = "+fD(p,4)+", erwartete Trefferzahl n · p = "+fD(n*p,1)+".";
+  // Streifen
+  const s=$("strip");let sh="";const a=out[0];
+  for(let i=Math.max(0,n-30);i<n;i++)sh+='<span class="tok'+(a[i]===st.tgt?" hit":"")+'">'+E.short[a[i]]+'</span>';
+  s.innerHTML=sh||'<span class="hint">Noch nicht geworfen</span>';
+  // Gedächtnis
+  let Y=0,X=0;const k=st.k;
+  for(let r=0;r<st.m;r++){const o=out[r];let run=0;
+    for(let i=0;i<n;i++){if(run>=k){Y++;if(o[i]===st.tgt)X++;}run=o[i]===st.tgt?run+1:0;}}
+  const what=st.exp==="coin"?E.names[st.tgt]:"eine "+E.names[st.tgt];
+  if(Y>0){$("memBig").textContent=fD(X/Y,3);
+    $("memTxt").innerHTML="Nach "+k+"-mal "+(st.exp==="coin"?E.names[st.tgt]:"„"+E.names[st.tgt]+"“")+" in Folge kam als Nächstes <strong>"+fN(X)+"</strong> von "+fN(Y)+" Mal wieder "+what+". Zum Vergleich: p = "+fD(p,3)+".";}
+  else{$("memBig").textContent="–";$("memTxt").textContent="Bisher gab es keine "+k+" Treffer in Folge. Wirf weiter oder nimm mehr Versuchsreihen.";}
+  draw();
+}
+
+/* Animation */
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+let raf=0;
+function animate(){
+  cancelAnimationFrame(raf);
+  if(reduce){st.n=st.goal;render();return;}
+  const step=()=>{if(st.n>=st.goal){render();return;}
+    st.n=Math.min(st.goal,st.n+Math.max(1,Math.floor(st.n*0.035)));render();raf=requestAnimationFrame(step);};
+  raf=requestAnimationFrame(step);
+}
+document.querySelectorAll("[data-add]").forEach(b=>b.addEventListener("click",()=>{st.goal=Math.min(MAX,Math.max(st.goal,st.n)+ +b.dataset.add);animate();}));
+$("all").addEventListener("click",()=>{st.goal=MAX;animate();});
+$("reset").addEventListener("click",()=>{cancelAnimationFrame(raf);rollAll();render();});
+$("exp").addEventListener("change",e=>{cancelAnimationFrame(raf);st.exp=e.target.value;fillTgt();rollAll();render();});
+$("tgt").addEventListener("change",e=>{st.tgt=+e.target.value;recum();render();});
+$("band").addEventListener("change",e=>{st.band=e.target.checked;render();});
+function segBind(attr,fn){const bs=document.querySelectorAll("[data-"+attr+"]");
+  bs.forEach(b=>b.addEventListener("click",()=>{bs.forEach(x=>x.setAttribute("aria-pressed",String(x===b)));fn(b.dataset[attr]);render();}));}
+segBind("s",v=>{st.m=+v;});segBind("x",v=>{st.xs=v;});segBind("k",v=>{st.k=+v;});
+
+readColors();
+const recolor=()=>{readColors();render();};
+const mq=matchMedia("(prefers-color-scheme: dark)");mq.addEventListener?mq.addEventListener("change",recolor):mq.addListener(recolor);
+new MutationObserver(recolor).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+let rt;window.addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(render,80);});
+
+fillTgt();rollAll();
+// Startzustand: zwei Versuchsreihen mit je 500 Würfen, damit gleich etwas zu sehen ist
+st.m=2;document.querySelectorAll("[data-s]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.s==="2")));
+st.n=500;st.goal=500;render();
+})();
+</script>
+</body>
+</html>

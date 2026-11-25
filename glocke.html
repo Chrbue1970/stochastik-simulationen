@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<title>Von Säulen zur Glocke</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --hell:#EAF1FA; --fg:#18212E; --muted:#596476; --line:#D6DFEA; --grid:#E6ECF3;
+  --accent:#1F5FA8; --accent-fg:#FFFFFF;
+  --s1:#1F5FA8; --s2:#C0392B; --s3:#2E8B57; --s4:#E07B18; --s5:#7B4BB7;
+  --s1-pale:#C6D6EC; --s2-pale:#F0C6C0;
+  --ref:#18212E; --band:rgba(242,194,48,.30); --dim:#E3E8EF;
+  --gelb:#F2C230; --gelb-bg:#FDF4D6;
+  --f-display:"Lexend","Segoe UI",system-ui,sans-serif;
+  --f-body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F141B; --surface:#171F2A; --hell:#1C2836; --fg:#E5EBF2; --muted:#9BA7B8; --line:#2B3747; --grid:#222C39;
+  --accent:#6EA6EA; --accent-fg:#0F141B;
+  --s1:#6EA6EA; --s2:#E8624F; --s3:#4FB582; --s4:#F0A04B; --s5:#B08AE6;
+  --s1-pale:#253A55; --s2-pale:#5C2C27;
+  --ref:#E5EBF2; --band:rgba(233,192,74,.22); --dim:#1F2833;
+  --gelb:#E9C04A; --gelb-bg:#2E2814; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F141B; --surface:#171F2A; --hell:#1C2836; --fg:#E5EBF2; --muted:#9BA7B8; --line:#2B3747; --grid:#222C39;
+  --accent:#6EA6EA; --accent-fg:#0F141B;
+  --s1:#6EA6EA; --s2:#E8624F; --s3:#4FB582; --s4:#F0A04B; --s5:#B08AE6;
+  --s1-pale:#253A55; --s2-pale:#5C2C27;
+  --ref:#E5EBF2; --band:rgba(233,192,74,.22); --dim:#1F2833;
+  --gelb:#E9C04A; --gelb-bg:#2E2814; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px;
+  font-variant-numeric:tabular-nums}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.2}
+h1{font-size:clamp(1.6rem,3.4vw,2.3rem);font-weight:700}
+h2{font-size:1.15rem;font-weight:600}
+p{margin:0}
+.ol{text-decoration:overline;text-decoration-thickness:1.5px}
+header{display:flex;flex-direction:column;gap:8px;border-bottom:3px solid var(--accent);padding-bottom:16px}
+.eyebrow{font-family:var(--f-display);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.eyebrow a{color:inherit}
+.lead{color:var(--muted);max-width:68ch}
+.main{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:820px){.main{grid-template-columns:minmax(0,1fr)}}
+.panel,.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.card{gap:10px;padding:16px}
+.stack{display:flex;flex-direction:column;gap:14px;min-width:0}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
+@media (max-width:820px){.row2{grid-template-columns:minmax(0,1fr)}}
+.headrow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.sub,.hint{color:var(--muted);font-size:.9rem}
+.ctrl{display:flex;flex-direction:column;gap:6px}
+.ctrl-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.ctrl-top label{font-weight:600}
+.smalllabel,.ctrl>label:not(.check){font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.num{display:flex;align-items:center;gap:4px;font-weight:700}
+.num input{width:4.8em;font:inherit;font-weight:700;text-align:right;padding:2px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg)}
+input[type=range]{width:100%;accent-color:var(--accent);margin:0}
+select{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);width:100%}
+button{font:inherit;cursor:pointer}
+.btn{background:var(--accent);color:var(--accent-fg);border:0;border-radius:8px;padding:9px 14px;font-weight:700}
+.btn:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.45;cursor:default;filter:none}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.btnrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.btnrow .btn{padding:8px 4px}
+.chip{border:1px solid var(--line);background:var(--hell);color:var(--fg);border-radius:999px;padding:4px 12px;font-size:.9rem}
+.chip:hover{border-color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+:focus-visible{outline:3px solid var(--gelb);outline-offset:2px}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{flex:1;border:0;background:var(--surface);color:var(--fg);padding:7px 6px;font-size:.9rem;line-height:1.25}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed=true]{background:var(--accent);color:var(--accent-fg);font-weight:700}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:.95rem}
+.check input{accent-color:var(--accent);margin-top:4px}
+.bignum{font-family:var(--f-display);font-size:2.4rem;font-weight:700;line-height:1;color:var(--accent)}
+canvas.chart{display:block;width:100%;height:280px}
+@media (max-width:640px){canvas.chart{height:230px}}
+.key{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.88rem;color:var(--muted)}
+.key span{display:flex;align-items:center;gap:6px}
+.key i{display:inline-block;width:18px;height:10px;border-radius:2px}
+.tscroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid var(--line);padding:6px 10px;text-align:right}
+th{background:var(--hell);text-align:center}
+.result{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:10px;padding:16px 18px;display:flex;flex-wrap:wrap;gap:8px 24px;align-items:center}
+.result .txt{flex:1;min-width:220px}
+.entdecken{background:var(--gelb-bg);border:1px solid var(--gelb);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.entdecken ol{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:10px;max-width:80ch}
+summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:.92rem}
+details p{margin-top:4px;font-size:.95rem}
+footer{color:var(--muted);font-size:.88rem}
+footer a{color:var(--accent)}
+[hidden]{display:none!important}
+
+/* Layout: links n, p, Laplace-Ampel und Auswahl des Bereichs, rechts Histogramm mit Glockenkurve und Vergleich exakt gegen genähert. */
+.ampel{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:8px;background:var(--hell);font-weight:600}
+.ampel i{width:16px;height:16px;border-radius:50%;flex:none}
+.cmp{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:560px){.cmp{grid-template-columns:minmax(0,1fr)}}
+.cmp div{background:var(--hell);border-radius:8px;padding:10px 12px}
+.cmp b{display:block;font-family:var(--f-display);font-size:1.45rem}
+.cmp span{font-size:.85rem;color:var(--muted)}
+.cmp small{display:block;font-size:.82rem;color:var(--muted)}
+.kin{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.kin input{width:5em;font:inherit;font-weight:700;text-align:right;padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Binomial- und Normalverteilung · Simulation 9 · zu Modul 5, Aufgabe 5.6, und Modul 6</span>
+    <h1>Von Säulen zur Glocke</h1>
+    <p class="lead">Lege die Glockenkurve der Normalverteilung mit μ = n · p und σ = √(n · p · (1 − p)) über das Histogramm der Binomialverteilung. Ab wann passt sie gut, und was taugen die Sigma-Regeln?</p>
+  </header>
+
+  <div class="main">
+    <section class="panel" aria-label="Einstellungen">
+      <div class="ctrl">
+        <div class="ctrl-top"><label for="nR">Anzahl n</label><span class="num"><input id="nN" type="number" min="1" max="1000" aria-label="n"></span></div>
+        <input id="nR" type="range" min="1" max="500" step="1">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-top"><label for="pR">Trefferwahrscheinlichkeit p</label><span class="num"><input id="pN" type="number" min="0.01" max="0.99" step="0.01" aria-label="p"></span></div>
+        <input id="pR" type="range" min="0.01" max="0.99" step="0.01">
+      </div>
+      <div class="ampel" id="ampel" aria-live="polite"><i></i><span></span></div>
+      <div class="ctrl">
+        <span class="smalllabel">Bereich</span>
+        <div class="seg" role="group" aria-label="Art des Bereichs"><button data-m="sig" aria-pressed="true">Sigma-Umgebung</button><button data-m="ab" aria-pressed="false">Intervall a bis b</button></div>
+        <div id="sigBox" class="seg" role="group" aria-label="Sigma-Umgebung">
+          <button data-s="1" aria-pressed="true">1σ</button><button data-s="2" aria-pressed="false">2σ</button><button data-s="3" aria-pressed="false">3σ</button><button data-s="1.96" aria-pressed="false">1,96σ</button>
+        </div>
+        <div id="abBox" class="kin" hidden><label for="aIn">a =</label><input id="aIn" type="number" min="0"><label for="bIn">b =</label><input id="bIn" type="number" min="0"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="kor" checked> Stetigkeitskorrektur (± 0,5) für die Näherung verwenden</label>
+      <label class="check"><input type="checkbox" id="curve" checked> Glockenkurve φ<sub>μ;σ</sub> zeigen</label>
+      <div class="chips"><button class="chip" data-ex="10,0.2">n = 10, p = 0,2</button><button class="chip" data-ex="100,0.2">n = 100, p = 0,2</button><button class="chip" data-ex="400,0.5">n = 400, p = 0,5</button></div>
+    </section>
+
+    <section class="stack">
+      <div class="card">
+        <div class="headrow"><h2>Histogramm und Glockenkurve</h2><span class="sub" id="kz"></span></div>
+        <canvas class="chart" id="cv" style="height:320px" aria-label="Histogramm der Binomialverteilung mit Glockenkurve"></canvas>
+        <div class="key"><span><i style="background:var(--s1)"></i>Säulen im Bereich</span><span><i style="background:var(--s1-pale)"></i>übrige Säulen</span><span><i style="background:var(--s2);height:3px"></i>Glockenkurve</span><span><i style="background:var(--band)"></i>Fläche unter der Kurve</span></div>
+      </div>
+      <div class="card">
+        <h2 id="cmpTitle">Vergleich</h2>
+        <div class="cmp">
+          <div><span>Exakt (Binomialverteilung)</span><b id="ex">–</b><small id="exT"></small></div>
+          <div><span>Normalverteilung</span><b id="nv">–</b><small id="nvT"></small></div>
+          <div><span id="ruleL">Sigma-Regel</span><b id="rule">–</b><small id="ruleT"></small></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="entdecken">
+    <h2>Entdecken</h2>
+    <ol>
+      <li>Lade n = 10, p = 0,2 und danach n = 100, p = 0,2. Bei welchem Beispiel passt die Glockenkurve gut? Was zeigt die Ampel?
+        <details><summary>Lösungshinweis</summary><p>Bei n = 10 ist σ ≈ 1,26, das Histogramm ist schief und die Kurve passt schlecht. Bei n = 100 ist σ = 4 &gt; 3, die Näherung ist brauchbar.</p></details></li>
+      <li>Halte n = 50 fest und verändere p von 0,5 nach 0,05. Was passiert mit der Form und mit σ?
+        <details><summary>Lösungshinweis</summary><p>Die Verteilung wird schief und schmal, σ sinkt unter 3. Am besten passt die Näherung für p in der Nähe von 0,5.</p></details></li>
+      <li>Vergleiche für die 1σ-, 2σ- und 3σ-Umgebung den exakten Wert mit der Sigma-Regel. Bei welchem n stimmt die Regel gut?
+        <details><summary>Lösungshinweis</summary><p>Für σ &gt; 3 weichen die exakten Werte meist nur um wenige Prozentpunkte von 68,3 %, 95,4 % und 99,7 % ab. Bei kleinem σ ist der Unterschied groß, weil nur wenige ganze Zahlen im Intervall liegen.</p></details></li>
+      <li>Aufgabe 5.6: Wähle n = 100, p = 0,5 und das Intervall 45 bis 55. Schalte die Stetigkeitskorrektur ein und aus. Welche Näherung ist besser? Warum?
+        <details><summary>Lösungshinweis</summary><p>Exakt sind es etwa 0,7287. Mit Korrektur liefert die Näherung etwa 0,7287, ohne nur etwa 0,6827. Jede Säule reicht von k − 0,5 bis k + 0,5, deshalb muss die Fläche bei a − 0,5 beginnen und bei b + 0,5 enden.</p></details></li>
+    </ol>
+  </section>
+
+  <footer>Gehört zu: Binomial- und Normalverteilung BG 13, Modul 5 „Die Normalverteilung“ und Modul 6 „Sigma-Regeln und Prognoseintervalle“. Die Seite speichert keine Daten. <a href="./" style="color:var(--accent)">Alle Simulationen</a></footer>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const fN=n=>Math.round(n).toLocaleString("de-DE").replace(/\./g," ");
+const fD=(x,d)=>x.toFixed(d).replace(".",",");
+let C={};
+function readColors(){const cs=getComputedStyle(document.documentElement);
+  ["s1","s2","s3","s4","s5","s1-pale","s2-pale","ref","band","grid","muted","fg","surface","line","dim","accent","hell","gelb"].forEach(k=>C[k]=cs.getPropertyValue("--"+k).trim());}
+function onTheme(fn){readColors();const r=()=>{readColors();fn();};
+  const mq=matchMedia("(prefers-color-scheme: dark)");mq.addEventListener?mq.addEventListener("change",r):mq.addListener(r);
+  new MutationObserver(r).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+  let t;window.addEventListener("resize",()=>{clearTimeout(t);t=setTimeout(fn,80);});}
+function setupCanvas(cv){const dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;
+  if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);}
+  const ctx=cv.getContext("2d");ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
+  ctx.font="13px "+getComputedStyle(document.body).fontFamily;return {ctx,w,h};}
+function segBind(attr,fn){const bs=document.querySelectorAll("[data-"+attr+"]");
+  bs.forEach(b=>b.addEventListener("click",()=>{bs.forEach(x=>x.setAttribute("aria-pressed",String(x===b)));fn(b.dataset[attr]);}));}
+const REDUCE=matchMedia("(prefers-reduced-motion: reduce)").matches;
+/* Binomial und Normal */
+function lnFact(n){let s=0;for(let i=2;i<=n;i++)s+=Math.log(i);return s;}
+function binomPMF(n,p){const a=new Float64Array(n+1);
+  if(p<=0){a[0]=1;return a;} if(p>=1){a[n]=1;return a;}
+  const lf=[0];for(let i=1;i<=n;i++)lf[i]=lf[i-1]+Math.log(i);
+  for(let k=0;k<=n;k++)a[k]=Math.exp(lf[n]-lf[k]-lf[n-k]+k*Math.log(p)+(n-k)*Math.log(1-p));return a;}
+function erf(x){const t=1/(1+0.3275911*Math.abs(x));const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return x>=0?y:-y;}
+function Phi(z){return 0.5*(1+erf(z/Math.SQRT2));}
+function invPhi(q){let lo=-10,hi=10;for(let i=0;i<80;i++){const m=(lo+hi)/2;if(Phi(m)<q)lo=m;else hi=m;}return (lo+hi)/2;}
+function randBinom(n,p){let k=0;for(let i=0;i<n;i++)if(Math.random()<p)k++;return k;}
+
+(function(){
+const st={n:100,p:0.2,m:"sig",s:1,a:15,b:25,kor:true,curve:true};
+const RULE={1:0.683,2:0.954,3:0.997,1.96:0.95};
+function bounds(){const mu=st.n*st.p,sg=Math.sqrt(st.n*st.p*(1-st.p));
+  if(st.m==="sig"){return {a:Math.max(0,Math.ceil(mu-st.s*sg-1e-9)),b:Math.min(st.n,Math.floor(mu+st.s*sg+1e-9)),lo:mu-st.s*sg,hi:mu+st.s*sg};}
+  const a=Math.max(0,Math.min(st.a,st.b)),b=Math.min(st.n,Math.max(st.a,st.b));return {a,b,lo:a,hi:b};}
+function render(){
+  const n=st.n,p=st.p,mu=n*p,sg=Math.sqrt(n*p*(1-p)),pm=binomPMF(n,p),{a,b,lo:sLo,hi:sHi}=bounds();
+  // Ampel
+  const good=sg>3;$("ampel").querySelector("i").style.background=good?"var(--s3)":"var(--s2)";
+  $("ampel").querySelector("span").textContent="σ ≈ "+fD(sg,2)+(good?" > 3: Laplace-Bedingung erfüllt, die Näherung ist brauchbar.":" ≤ 3: Laplace-Bedingung nicht erfüllt, die Näherung ist ungenau.");
+  $("kz").textContent="μ = "+fD(mu,2)+" · σ = "+fD(sg,2);
+  // Werte
+  let ex=0;for(let k=a;k<=b;k++)ex+=pm[k];
+  const za=st.kor?a-0.5:a,zb=st.kor?b+0.5:b,nv=sg>0?Phi((zb-mu)/sg)-Phi((za-mu)/sg):0;
+  $("cmpTitle").textContent="Vergleich für P("+a+" ≤ X ≤ "+b+")";
+  $("ex").textContent=fD(ex,4);$("exT").textContent="Summe der Säulen "+a+" bis "+b;
+  $("nv").textContent=fD(nv,4);$("nvT").textContent="Fläche von "+fD(za,1)+" bis "+fD(zb,1)+(st.kor?" (mit Korrektur)":" (ohne Korrektur)");
+  if(st.m==="sig"){$("ruleL").textContent="Sigma-Regel";$("rule").textContent=fD(RULE[st.s]*100,1).replace(",0","")+" %";
+    $("ruleT").textContent="Intervall ["+fD(sHi>sLo?sLo:0,2)+"; "+fD(sHi,2)+"], ganze Zahlen "+a+" bis "+b;}
+  else{$("ruleL").textContent="Abweichung der Näherung";$("rule").textContent=fD(Math.abs(nv-ex)*100,2)+" %-Pkt.";$("ruleT").textContent="|Näherung − exakt|";}
+  // Zeichnen
+  const cv=$("cv"),{ctx,w,h}=setupCanvas(cv),L=52,R=12,T=12,B=30,W=w-L-R,H=h-T-B;
+  let lo=0,hi=n;if(n>30){lo=Math.max(0,Math.floor(mu-4.5*sg-1));hi=Math.min(n,Math.ceil(mu+4.5*sg+1));}
+  lo=Math.min(lo,a);hi=Math.max(hi,b);
+  const dens=x=>sg>0?Math.exp(-0.5*((x-mu)/sg)**2)/(sg*Math.sqrt(2*Math.PI)):0;
+  let ym=0;for(let k=lo;k<=hi;k++)ym=Math.max(ym,pm[k]);ym=Math.max(ym,st.curve?dens(mu):0)*1.12;
+  const xL=lo-0.5,xR=hi+0.5,X=x=>L+(x-xL)/(xR-xL)*W,Y=v=>T+(1-v/ym)*H;
+  ctx.strokeStyle=C.grid;ctx.fillStyle=C.muted;ctx.lineWidth=1;ctx.textAlign="right";ctx.textBaseline="middle";
+  const s=[0.005,0.01,0.02,0.05,0.1,0.2,0.25,0.5].find(x=>ym/x<=6)||0.5;
+  for(let v=0;v<=ym;v+=s){ctx.beginPath();ctx.moveTo(L,Y(v));ctx.lineTo(L+W,Y(v));ctx.stroke();ctx.fillText(fD(v,s<0.01?3:2),L-6,Y(v));}
+  if(st.curve&&sg>0){ctx.fillStyle=C.band;ctx.beginPath();const x0=Math.max(xL,za),x1=Math.min(xR,zb);ctx.moveTo(X(x0),Y(0));
+    for(let i=0;i<=120;i++){const x=x0+(x1-x0)*i/120;ctx.lineTo(X(x),Y(dens(x)));}ctx.lineTo(X(x1),Y(0));ctx.closePath();ctx.fill();}
+  const bw=W/(xR-xL);
+  for(let k=lo;k<=hi;k++){ctx.fillStyle=k>=a&&k<=b?C.s1:C["s1-pale"];const g=bw>6?1:0;ctx.globalAlpha=0.85;
+    ctx.fillRect(X(k-0.5)+g,Y(pm[k]),bw-2*g,Y(0)-Y(pm[k]));ctx.globalAlpha=1;}
+  if(st.curve&&sg>0){ctx.strokeStyle=C.s2;ctx.lineWidth=2.5;ctx.beginPath();
+    for(let i=0;i<=300;i++){const x=xL+(xR-xL)*i/300;i?ctx.lineTo(X(x),Y(dens(x))):ctx.moveTo(X(x),Y(dens(x)));}ctx.stroke();}
+  if(st.m==="sig"){ctx.strokeStyle=C.fg;ctx.setLineDash([4,4]);ctx.lineWidth=1.2;[sLo,sHi].forEach(x=>{if(x>=xL&&x<=xR){ctx.beginPath();ctx.moveTo(X(x),T);ctx.lineTo(X(x),T+H);ctx.stroke();}});ctx.setLineDash([]);}
+  ctx.fillStyle=C.muted;ctx.textAlign="center";ctx.textBaseline="top";
+  const cnt=hi-lo+1,ls=[1,2,5,10,20,25,50,100].find(x=>cnt/x<=14)||100;
+  for(let k=Math.ceil(lo/ls)*ls;k<=hi;k+=ls)ctx.fillText(k,X(k),T+H+6);
+  $("nR").value=Math.min(500,n);$("nN").value=n;$("pR").value=p;$("pN").value=p;$("aIn").value=st.a;$("bIn").value=st.b;
+}
+$("nR").addEventListener("input",e=>{st.n=+e.target.value;render();});
+$("nN").addEventListener("change",e=>{st.n=Math.max(1,Math.min(1000,parseInt(e.target.value)||1));render();});
+$("pR").addEventListener("input",e=>{st.p=+e.target.value;render();});
+$("pN").addEventListener("change",e=>{let v=parseFloat(String(e.target.value).replace(",","."));if(!isFinite(v))v=st.p;st.p=Math.max(0.01,Math.min(0.99,v));render();});
+segBind("m",v=>{st.m=v;$("sigBox").hidden=v!=="sig";$("abBox").hidden=v!=="ab";render();});
+segBind("s",v=>{st.s=+v;render();});
+$("aIn").addEventListener("change",e=>{st.a=Math.max(0,parseInt(e.target.value)||0);render();});
+$("bIn").addEventListener("change",e=>{st.b=Math.max(0,parseInt(e.target.value)||0);render();});
+$("kor").addEventListener("change",e=>{st.kor=e.target.checked;render();});
+$("curve").addEventListener("change",e=>{st.curve=e.target.checked;render();});
+document.querySelectorAll("[data-ex]").forEach(b=>b.addEventListener("click",()=>{const [n,p]=b.dataset.ex.split(",").map(Number);st.n=n;st.p=p;render();}));
+onTheme(render);
+render();
+})();
+</script>
+</body>
+</html>
